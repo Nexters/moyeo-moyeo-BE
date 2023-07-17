@@ -1,0 +1,29 @@
+# local mysql 설정
+version: '3.8'
+services:
+
+  # mysqldb
+  mysql:
+    container_name: mysql-moyeomoyeo
+    image: mysql:8.0.31
+    ports:
+      - "3333:3306"
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: moyeomoyeo
+      MYSQL_USER: test
+      MYSQL_PASSWORD: test
+    volumes:
+      - ./infra/mysql/data:/var/lib/mysql
+      - ./infra/mysql/conf/my.cnf:/etc/mysql/conf.d/my.cnf
+
+  # application
+  moyeomoyeo:
+    image: sju02030/moyeomoyeo
+    restart: always
+    container_name: moyeomoyeo
+    ports:
+      - 8085:8085
+    depends_on:
+      - mysql
