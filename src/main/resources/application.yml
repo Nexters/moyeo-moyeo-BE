@@ -1,0 +1,21 @@
+server:
+  port: 8085
+
+spring:
+  profiles:
+    active: local
+    group:
+      local: local
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+
+logging.level:
+  org.hibernate.SQL: debug
+  org.hibernate.type: info
+  com.jpa: debug
