@@ -2,8 +2,12 @@ package com.nexters.moyeomoyeo.team_building.domain.team;
 
 import com.nexters.moyeomoyeo.team_building.domain.room.*;
 import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
 public class Team {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

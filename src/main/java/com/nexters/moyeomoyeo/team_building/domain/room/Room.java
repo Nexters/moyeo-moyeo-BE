@@ -3,10 +3,14 @@ package com.nexters.moyeomoyeo.team_building.domain.room;
 import com.nexters.moyeomoyeo.team_building.domain.team.*;
 import com.nexters.moyeomoyeo.team_building.domain.user.*;
 import jakarta.persistence.*;
+import lombok.*;
 
 import java.util.*;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
 public class Room {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
