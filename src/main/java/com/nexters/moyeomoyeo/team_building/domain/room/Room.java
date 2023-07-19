@@ -21,10 +21,10 @@ public class Room {
 	private RoomStatus RoomStatus;
 
 	@OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
-	private List<Team> teams;
+	private List<Team> teams = new ArrayList<Team>();
 
 	@OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
-	private List<User> users;
+	private List<User> users = new ArrayList<User>();
 }
 
 

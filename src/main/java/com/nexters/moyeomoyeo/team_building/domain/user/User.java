@@ -27,7 +27,7 @@ public class User {
 	private String forthChoice;
 
 	@ManyToOne(fetch = FetchType.EAGER)
-	@Column(name = "team_id")
+	@JoinColumn(name = "team_id")
 	private Team team;
 
 	@ManyToOne(fetch = FetchType.EAGER)
