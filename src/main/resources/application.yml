@@ -1,7 +1,12 @@
 server:
-  port: 8080
+  port: 8085
 
 spring:
+  datasource:
+    url: jdbc:mysql://localhost:3333/moyeomoyeo?createDatabaseIfNotExist=true
+    username: test
+    password: test
+    driver-class-name: com.mysql.cj.jdbc.Driver
   profiles:
     active: local
 
@@ -17,3 +22,4 @@ logging.level:
   org.hibernate.SQL: debug
   org.hibernate.type: info
   com.jpa: debug
+
