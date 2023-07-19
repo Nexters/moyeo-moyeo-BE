@@ -1,6 +1,7 @@
 package com.nexters.moyeomoyeo.team_building.domain.room;
 
 import com.nexters.moyeomoyeo.team_building.domain.team.*;
+import com.nexters.moyeomoyeo.team_building.domain.user.*;
 import jakarta.persistence.*;
 
 import java.util.*;
@@ -21,6 +22,9 @@ public class Room {
 
 	@OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
 	private List<Team> teams;
+
+	@OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
+	private List<User> users;
 }
 
 
