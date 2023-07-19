@@ -5,4 +5,5 @@ public enum RoomStatus {
 	SECOND_ROUND,
 	THIRD_ROUND,
 	FORTH_ROUND,
+	COMPLETE
 }

@@ -1,6 +1,9 @@
 package com.nexters.moyeomoyeo.team_building.domain.room;
 
+import com.nexters.moyeomoyeo.team_building.domain.team.*;
 import jakarta.persistence.*;
+
+import java.util.*;
 
 @Entity
 public class Room {
@@ -13,7 +16,11 @@ public class Room {
 	private String entrance_uri;
 
 	@Enumerated(EnumType.STRING)
-	private RoomStatus roomStatus;
+	@Column(name = "round_status")
+	private RoomStatus RoomStatus;
+
+	@OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
+	private List<Team> teams;
 }
 
 
