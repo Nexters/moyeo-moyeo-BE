@@ -7,7 +7,6 @@ import lombok.*;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor
 public class User {
 	@Id
@@ -16,6 +15,7 @@ public class User {
 	private Long id;
 
 	private String name;
+
 	@Enumerated(EnumType.STRING)
 	private Position position;
 	@Column(name = "first_choice")
@@ -37,4 +37,16 @@ public class User {
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "room_id")
 	private Room room;
+
+	public User(Long id, String name, Position position, String firstChoice, String secondChoice, String thirdChoice, String forthChoice, Team team, Room room) {
+		this.id = id;
+		this.name = name;
+		this.position = position;
+		this.firstChoice = firstChoice;
+		this.secondChoice = secondChoice;
+		this.thirdChoice = thirdChoice;
+		this.forthChoice = forthChoice;
+		this.team = team;
+		this.room = room;
+	}
 }
