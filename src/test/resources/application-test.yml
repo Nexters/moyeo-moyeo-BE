@@ -1,10 +1,10 @@
 spring:
   datasource:
-    url: jdbc:h2:mem:test
-    username: test
-    password: test
+    url: jdbc:h2:tcp://localhost/~/test
     driver-class-name: org.h2.Driver
-    sql-script-encoding: utf-8
+    hikari:
+      username: sa
+      password:
   jpa:
     database: H2
     open-in-view: false
@@ -15,6 +15,9 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  sql:
+    init:
+      encoding: utf-8
 
 logging.level:
   org.hibernate.SQL: debug
