@@ -16,7 +16,7 @@ public class Choice {
 	@Column(name = "choice_order")
 	private Integer choiceOrder;
 
-	@OneToOne(mappedBy = "user_uuid")
+	@OneToOne(mappedBy = "choice")
 	private User user;
 
 	public Choice(Long id, Integer choiceOrder, User user) {
