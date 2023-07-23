@@ -14,7 +14,7 @@ public class Team {
 	private Long id;
 	private String name;
 
-	@Column(name = "team_uuid")
+	@Column(name = "team_uuid", length = 10, unique = true)
 	private String teamUuid;
 
 	@Enumerated(EnumType.STRING)

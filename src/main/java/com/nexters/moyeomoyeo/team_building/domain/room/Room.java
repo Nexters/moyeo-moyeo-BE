@@ -18,7 +18,7 @@ public class Room {
 	@Column(name = "room_id")
 	private Long id;
 
-	@Column(name = "room_uuid", length = 10)
+	@Column(name = "room_uuid", length = 10, unique = true)
 	private String roomUuid;
 
 	@Column(name = "entrance_code")
