@@ -26,6 +26,9 @@ jobs:
         run: chmod +x gradlew
         shell: bash
 
+      - name: Build
+        run: ./gradlew build -x test
+
       - name: Gradle Build Action
         run: SPRING_PROFILES_ACTIVE=[test] ./gradlew test
 
