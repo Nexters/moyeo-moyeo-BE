@@ -17,9 +17,9 @@ public class Room {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "room_id")
 	private Long id;
-	private String name;
 
-	private String entrance_uri;
+	@Column(name = "entrance_code")
+	private String entranceCode;
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "round_status")
@@ -31,17 +31,16 @@ public class Room {
 	@OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
 	private List<User> users = new ArrayList<User>();
 
-	public Room(Long id, String name, String entrance_uri, RoomStatus roomStatus, List<Team> teams, List<User> users) {
+	public Room(Long id, String entranceCode, RoomStatus roomStatus, List<Team> teams, List<User> users) {
 		this.id = id;
-		this.name = name;
-		this.entrance_uri = entrance_uri;
+		this.entranceCode = entranceCode;
 		this.roomStatus = roomStatus;
 		this.teams = teams;
 		this.users = users;
 	}
 
-	public Room(Long id, String name, String entrance_uri, List<Team> teams, List<User> users) {
-		this(id, name, entrance_uri, FIRST_ROUND, teams, users);
+	public Room(Long id, String entranceCode, List<Team> teams, List<User> users) {
+		this(id, entranceCode, FIRST_ROUND, teams, users);
 	}
 
 	public void addUsers(List<User> users) {
