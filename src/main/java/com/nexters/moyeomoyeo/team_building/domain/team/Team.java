@@ -15,26 +15,26 @@ public class Team {
 	private String name;
 
 	@Column(name = "team_uuid")
-	private String uuid;
+	private String teamUuid;
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "round_status")
 	private RoundStatus roundStatus;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "room_id")
+	@JoinColumn(name = "room_uuid")
 	private Room room;
 
-	public Team(Long id, String name, String uuid, RoundStatus roundStatus, Room room) {
+	public Team(Long id, String name, String teamUuid, RoundStatus roundStatus, Room room) {
 		this.id = id;
 		this.name = name;
-		this.uuid = uuid;
+		this.teamUuid = teamUuid;
 		this.roundStatus = roundStatus;
 		this.room = room;
 	}
 
-	public Team(Long id, String name, String uuid, Room room) {
-		this(id, name, uuid, RoundStatus.FIRST_ROUND, room);
+	public Team(Long id, String name, String teamUuid, Room room) {
+		this(id, name, teamUuid, RoundStatus.FIRST_ROUND, room);
 	}
 
 	public void changeRoomStatus(RoundStatus updateRoundStatus) {
