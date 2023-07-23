@@ -1,0 +1,26 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:test
+    username: test
+    password: test
+    driver-class-name: org.h2.Driver
+    sql-script-encoding: utf-8
+  jpa:
+    database: H2
+    open-in-view: false
+    hibernate:
+      ddl-auto: create-drop
+      dialect: H2Dialect
+
+    properties:
+      hibernate:
+        format_sql: true
+
+logging.level:
+  org.hibernate.SQL: debug
+  org.hibernate.type: info
+  com.jpa: debug
+
+h2:
+  console:
+    enabled: true
