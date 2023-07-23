@@ -24,7 +24,7 @@ public class User {
 	private Position position;
 
 	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "user_uuid")
+	@JoinColumn(name = "choice_id")
 	private Choice choice;
 
 	@ManyToOne(fetch = FetchType.LAZY)
