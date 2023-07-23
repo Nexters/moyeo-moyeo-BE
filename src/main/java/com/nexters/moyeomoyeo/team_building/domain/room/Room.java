@@ -18,6 +18,9 @@ public class Room {
 	@Column(name = "room_id")
 	private Long id;
 
+	@Column(name = "room_uuid", length = 10)
+	private String roomUuid;
+
 	@Column(name = "entrance_code")
 	private String entranceCode;
 
@@ -31,16 +34,17 @@ public class Room {
 	@OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
 	private List<User> users = new ArrayList<User>();
 
-	public Room(Long id, String entranceCode, RoomStatus roomStatus, List<Team> teams, List<User> users) {
+	public Room(Long id, String roomUuid, String entranceCode, RoomStatus roomStatus, List<Team> teams, List<User> users) {
 		this.id = id;
+		this.roomUuid = roomUuid;
 		this.entranceCode = entranceCode;
 		this.roomStatus = roomStatus;
 		this.teams = teams;
 		this.users = users;
 	}
 
-	public Room(Long id, String entranceCode, List<Team> teams, List<User> users) {
-		this(id, entranceCode, FIRST_ROUND, teams, users);
+	public Room(Long id, String roomUuid, String entranceCode, List<Team> teams, List<User> users) {
+		this(id, roomUuid, entranceCode, FIRST_ROUND, teams, users);
 	}
 
 	public void addUsers(List<User> users) {
