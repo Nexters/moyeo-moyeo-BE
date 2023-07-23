@@ -1,29 +1,25 @@
 spring:
-  datasource:
-    url: jdbc:h2:tcp://localhost/~/test
-    driver-class-name: org.h2.Driver
-    hikari:
-      username: sa
-      password:
   jpa:
-    database: H2
-    open-in-view: false
+    show-sql: true
     hibernate:
-      ddl-auto: create-drop
-      dialect: H2Dialect
-
+      ddl-auto: create
     properties:
       hibernate:
         format_sql: true
-  sql:
-    init:
-      encoding: utf-8
-
-logging.level:
-  org.hibernate.SQL: debug
-  org.hibernate.type: info
-  com.jpa: debug
-
-h2:
-  console:
-    enabled: true
+    generate-ddl: true
+    defer-datasource-initialization: true
+  datasource:
+    url:
+    username: sa
+  h2:
+    console:
+      enabled:
+        true
+logging:
+  level:
+    org:
+      hibernate:
+        type:
+          descriptor:
+            sql:
+              BasicBinder: TRACE
