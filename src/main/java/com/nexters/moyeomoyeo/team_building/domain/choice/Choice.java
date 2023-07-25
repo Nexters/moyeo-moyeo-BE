@@ -1,13 +1,23 @@
 package com.nexters.moyeomoyeo.team_building.domain.choice;
 
-import com.nexters.moyeomoyeo.team_building.domain.user.*;
-import jakarta.persistence.*;
-import lombok.*;
+import com.nexters.moyeomoyeo.common.entity.BaseEntity;
+import com.nexters.moyeomoyeo.team_building.domain.user.User;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Getter
 @NoArgsConstructor
-public class Choice {
+@SuperBuilder
+public class Choice extends BaseEntity {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "choice_id")
@@ -19,8 +29,7 @@ public class Choice {
 	@OneToOne(mappedBy = "choice")
 	private User user;
 
-	public Choice(Long id, Integer choiceOrder, User user) {
-		this.id = id;
+	protected Choice(Integer choiceOrder, User user) {
 		this.choiceOrder = choiceOrder;
 		this.user = user;
 	}

@@ -1,22 +1,40 @@
 package com.nexters.moyeomoyeo.team_building.domain.user;
 
-import com.nexters.moyeomoyeo.team_building.domain.choice.*;
-import com.nexters.moyeomoyeo.team_building.domain.room.*;
-import com.nexters.moyeomoyeo.team_building.domain.team.*;
-import jakarta.persistence.*;
-import lombok.*;
+import com.nexters.moyeomoyeo.common.entity.BaseEntity;
+import com.nexters.moyeomoyeo.common.util.UuidGenerator;
+import com.nexters.moyeomoyeo.team_building.domain.choice.Choice;
+import com.nexters.moyeomoyeo.team_building.domain.room.Room;
+import com.nexters.moyeomoyeo.team_building.domain.team.Team;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Getter
 @NoArgsConstructor
-public class User {
+@SuperBuilder
+public class User extends BaseEntity {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "user_id")
 	private Long id;
 
 	@Column(name = "user_uuid", length = 10, unique = true)
-	private String userUuid;
+	@Builder.Default
+	private String userUuid = UuidGenerator.createUuid();
 
 	private String name;
 
@@ -35,8 +53,7 @@ public class User {
 	@JoinColumn(name = "room_uuid")
 	private Room room;
 
-	public User(Long id, String userUuid, String name, Position position, Choice choice, Team team, Room room) {
-		this.id = id;
+	protected User(String userUuid, String name, Position position, Choice choice, Team team, Room room) {
 		this.userUuid = userUuid;
 		this.name = name;
 		this.position = position;

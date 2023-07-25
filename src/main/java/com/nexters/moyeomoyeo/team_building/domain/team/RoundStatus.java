@@ -1,22 +1,24 @@
 package com.nexters.moyeomoyeo.team_building.domain.team;
 
-import com.nexters.moyeomoyeo.team_building.domain.room.*;
+import lombok.Getter;
 
 public enum RoundStatus {
 	FIRST_ROUND(1),
 	SECOND_ROUND(2),
 	THIRD_ROUND(3),
 	FORTH_ROUND(4),
-	COMPLETE(5),
+	ADJUSTED_ROUND(5),
+	COMPLETE(6),
 	;
+
+	@Getter
+	final private int weight;
 
 	RoundStatus(int weight) {
 		this.weight = weight;
 	}
 
-	private int weight;
-
-	public boolean canNextRound(RoomStatus roomStatus) {
-		return !roomStatus.isFinishRound(this.weight);
+	public boolean isFinishRound(int order) {
+		return this.weight > order;
 	}
 }
