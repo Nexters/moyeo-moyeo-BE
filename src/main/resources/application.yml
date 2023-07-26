@@ -7,11 +7,12 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     properties:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.MySQLDialect
+        default_batch_fetch_size: 10
 
 logging.level:
   org.hibernate.SQL: debug
