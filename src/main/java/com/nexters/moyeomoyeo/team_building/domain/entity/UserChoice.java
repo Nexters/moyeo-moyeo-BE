@@ -1,13 +1,14 @@
-package com.nexters.moyeomoyeo.team_building.domain.choice;
+package com.nexters.moyeomoyeo.team_building.domain.entity;
 
 import com.nexters.moyeomoyeo.common.entity.BaseEntity;
-import com.nexters.moyeomoyeo.team_building.domain.user.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -16,7 +17,7 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @NoArgsConstructor
 @SuperBuilder
-public class Choice extends BaseEntity {
+public class UserChoice extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,11 +27,18 @@ public class Choice extends BaseEntity {
 	@Column(name = "choice_order")
 	private Integer choiceOrder;
 
-	@OneToOne(mappedBy = "choice")
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id")
 	private User user;
 
-	protected Choice(Integer choiceOrder, User user) {
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "team_id")
+	private Team team;
+
+
+	protected UserChoice(Integer choiceOrder, User user, Team team) {
 		this.choiceOrder = choiceOrder;
 		this.user = user;
+		this.team = team;
 	}
 }

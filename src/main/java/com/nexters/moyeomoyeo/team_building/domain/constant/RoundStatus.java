@@ -1,4 +1,4 @@
-package com.nexters.moyeomoyeo.team_building.domain.team;
+package com.nexters.moyeomoyeo.team_building.domain.constant;
 
 import lombok.Getter;
 

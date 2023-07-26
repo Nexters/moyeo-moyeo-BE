@@ -1,10 +1,10 @@
-package com.nexters.moyeomoyeo.team_building.domain.user;
+package com.nexters.moyeomoyeo.team_building.domain.entity;
 
+import com.nexters.moyeomoyeo.common.constant.ExceptionInfo;
 import com.nexters.moyeomoyeo.common.entity.BaseEntity;
 import com.nexters.moyeomoyeo.common.util.UuidGenerator;
-import com.nexters.moyeomoyeo.team_building.domain.choice.Choice;
-import com.nexters.moyeomoyeo.team_building.domain.room.Room;
-import com.nexters.moyeomoyeo.team_building.domain.team.Team;
+import com.nexters.moyeomoyeo.team_building.domain.constant.Position;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -15,7 +15,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
+import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,7 +34,7 @@ public class User extends BaseEntity {
 	@Column(name = "user_id")
 	private Long id;
 
-	@Column(name = "user_uuid", length = 10, unique = true)
+	@Column(name = "user_uuid", length = 30, unique = true)
 	@Builder.Default
 	private String userUuid = UuidGenerator.createUuid();
 
@@ -41,25 +43,35 @@ public class User extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	private Position position;
 
-	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "choice_id")
-	private Choice choice;
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OrderBy("choice_order asc")
+	private List<UserChoice> choices;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "team_uuid")
+	@JoinColumn(name = "team_id")
 	private Team team;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "room_uuid")
+	@JoinColumn(name = "room_id")
 	private Room room;
 
-	protected User(String userUuid, String name, Position position, Choice choice, Team team, Room room) {
+	protected User(String userUuid, String name, Position position, List<UserChoice> choices, Room room) {
 		this.userUuid = userUuid;
 		this.name = name;
 		this.position = position;
-		this.choice = choice;
-		this.team = team;
+		this.choices = choices;
 		this.room = room;
+	}
+
+	public void addTeam(Team team) {
+		if (this.team != null) {
+			throw ExceptionInfo.ALREADY_JOINED_USER.exception();
+		}
+		this.team = team;
+	}
+
+	public UserChoice findChoiceTeam(int weight) {
+		return this.choices.get(weight - 1);
 	}
 }
 

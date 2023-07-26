@@ -1,8 +1,10 @@
-package com.nexters.moyeomoyeo.team_building.domain.team;
+package com.nexters.moyeomoyeo.team_building.domain.entity;
 
 import com.nexters.moyeomoyeo.common.entity.BaseEntity;
 import com.nexters.moyeomoyeo.common.util.UuidGenerator;
-import com.nexters.moyeomoyeo.team_building.domain.room.Room;
+import com.nexters.moyeomoyeo.team_building.domain.constant.Position;
+import com.nexters.moyeomoyeo.team_building.domain.constant.RoundStatus;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -13,6 +15,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,7 +34,12 @@ public class Team extends BaseEntity {
 	private Long id;
 	private String name;
 
-	@Column(name = "team_uuid", length = 10, unique = true)
+	private String pmName;
+
+	@Enumerated(EnumType.STRING)
+	private Position pmPosition;
+
+	@Column(name = "team_uuid", length = 30, unique = true)
 	@Builder.Default
 	private String teamUuid = UuidGenerator.createUuid();
 
@@ -39,8 +48,11 @@ public class Team extends BaseEntity {
 	private RoundStatus roundStatus;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "room_uuid")
+	@JoinColumn(name = "room_id")
 	private Room room;
+
+	@OneToMany(mappedBy = "team", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private List<User> users;
 
 	protected Team(String name, String teamUuid, RoundStatus roundStatus, Room room) {
 		this.name = name;
@@ -57,11 +69,7 @@ public class Team extends BaseEntity {
 		this.roundStatus = updateRoundStatus;
 	}
 
-	public boolean addRoom(Room room) {
-		if (this.room == null) {
-			this.room = room;
-			return true;
-		}
-		return false;
+	public void addUsers(List<User> users) {
+		this.users.addAll(users);
 	}
 }
