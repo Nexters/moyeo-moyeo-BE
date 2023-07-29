@@ -65,11 +65,12 @@ public class Team extends BaseEntity {
 		return new Team(name, teamUuid, RoundStatus.FIRST_ROUND, room);
 	}
 
-	public void changeRoomStatus(RoundStatus updateRoundStatus) {
-		this.roundStatus = updateRoundStatus;
+	public void updateRoomStatus() {
+		if (RoundStatus.COMPLETE == this.getRoundStatus()) {
+			return;
+		}
+
+		this.roundStatus = this.getRoundStatus().getNextStatus();
 	}
 
-	public void addUsers(List<User> users) {
-		this.users.addAll(users);
-	}
 }

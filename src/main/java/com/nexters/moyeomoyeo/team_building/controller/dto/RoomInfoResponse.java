@@ -46,7 +46,7 @@ public class RoomInfoResponse {
 				return true;
 			}
 
-			return roomStatus.getWeight() < teamStatus.getWeight();
+			return roomStatus.getNextStatus() == teamStatus;
 		}
 	}
 
@@ -60,7 +60,8 @@ public class RoomInfoResponse {
 		private String userName;
 		private Position position;
 		private List<String> choices;
-		private boolean isSelectedTeam;
 		private String joinedTeamUuid;
+		@Builder.Default
+		private boolean isSelectedTeam = false;
 	}
 }

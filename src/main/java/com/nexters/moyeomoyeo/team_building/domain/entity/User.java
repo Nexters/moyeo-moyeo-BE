@@ -68,6 +68,7 @@ public class User extends BaseEntity {
 			throw ExceptionInfo.ALREADY_JOINED_USER.exception();
 		}
 		this.team = team;
+		this.team.getUsers().add(this);
 	}
 
 	public UserChoice findChoiceTeam(int weight) {
