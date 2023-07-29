@@ -16,8 +16,8 @@ import org.springframework.context.annotation.*;
 public class SwaggerConfig {
 
 	@Bean
-	public GroupedOpenApi chatOpenApi() {
-		String[] paths = {"/v1/**"};
+	public GroupedOpenApi teamBuildingApi() {
+		String[] paths = {"/api/**"};
 
 		return GroupedOpenApi.builder()
 			.group("모여모여 API v1")
