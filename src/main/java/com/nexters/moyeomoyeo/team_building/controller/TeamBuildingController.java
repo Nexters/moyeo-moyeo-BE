@@ -31,7 +31,7 @@ public class TeamBuildingController {
 		@PathVariable(value = "roomUuid") String roomUuid,
 		@PathVariable(value = "teamUuid") String teamUuid,
 		@RequestBody @Valid UserPickRequest userPickRequest) {
-		return ResponseEntity.ok(teamBuildingService.pickUsers(teamUuid, userPickRequest));
+		return ResponseEntity.ok(teamBuildingService.pickUsers(roomUuid, teamUuid, userPickRequest));
 	}
 
 }

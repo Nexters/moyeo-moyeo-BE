@@ -100,6 +100,23 @@ public class TeamBuildingService {
 		return true;
 	}
 
+	/**
+	 * 모든 팀이 선택을 완료했는지 판단.
+	 *
+	 * @param teams           room 의 team 들
+	 * @param roomRoundStatus 현재 room 의 round 상태
+	 * @return 완료됐으면 true
+	 */
+	private static boolean isAllTeamSelected(List<Team> teams, RoundStatus roomRoundStatus) {
+		for (final Team team : teams) {
+			if (roomRoundStatus == team.getRoundStatus()) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
 	@Transactional(readOnly = true)
 	public RoomInfoResponse findRoomInfo(String roomUuid) {
 		final Room room = roomRepository.findByRoomUuid(roomUuid)
@@ -113,23 +130,39 @@ public class TeamBuildingService {
 	}
 
 	@Transactional
-	public UserPickResponse pickUsers(String teamUuid, UserPickRequest userPickRequest) {
-		List<String> userUuids = userPickRequest.getUserUuids();
-		final List<User> pickedUsers = userRepository.findByUuidIn(userUuids);
-		final Team team = teamRepository.findByTeamUuid(teamUuid)
+	public UserPickResponse pickUsers(String roomUuid, String teamUuid, UserPickRequest userPickRequest) {
+		final Room room = roomRepository.findByRoomUuid(roomUuid)
+			.orElseThrow(ExceptionInfo.INVALID_ROOM_UUID::exception);
+
+		if (RoundStatus.COMPLETE == room.getRoundStatus()) {
+			throw ExceptionInfo.COMPLETED_TEAM_BUILDING.exception();
+		}
+
+		final Team targetTeam = room.getTeams().stream()
+			.filter(team -> teamUuid.equals(team.getTeamUuid()))
+			.findFirst()
 			.orElseThrow(ExceptionInfo.INVALID_TEAM_UUID::exception);
 
-		if (!isValidUser(userUuids, pickedUsers) || !isChosenTeam(team, pickedUsers)) {
+		final List<String> userUuids = userPickRequest.getUserUuids();
+		final List<User> pickedUsers = room.getUsers().stream()
+			.filter(user -> userUuids.contains(user.getUserUuid()))
+			.toList();
+
+		if (!isValidUser(userUuids, pickedUsers) || !isChosenTeam(targetTeam, pickedUsers)) {
 			throw ExceptionInfo.BAD_REQUEST_FOR_USER_PICK.exception();
 		}
 
 		for (final User user : pickedUsers) {
-			user.addTeam(team);
+			user.addTeam(targetTeam);
 		}
-		team.updateRoomStatus();
+
+		targetTeam.updateRoomStatus();
+		if (isAllTeamSelected(room.getTeams(), room.getRoundStatus())) {
+			room.updateRoomStatus();
+		}
 
 		return UserPickResponse.builder()
-			.userInfoList(team.getUsers().stream().map(TeamBuildingService::makeUserInfo).toList())
+			.userInfoList(targetTeam.getUsers().stream().map(TeamBuildingService::makeUserInfo).toList())
 			.build();
 	}
 }

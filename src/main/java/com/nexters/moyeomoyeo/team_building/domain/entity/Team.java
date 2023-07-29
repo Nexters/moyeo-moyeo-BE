@@ -66,10 +66,6 @@ public class Team extends BaseEntity {
 	}
 
 	public void updateRoomStatus() {
-		if (RoundStatus.COMPLETE == this.getRoundStatus()) {
-			return;
-		}
-
 		this.roundStatus = this.getRoundStatus().getNextStatus();
 	}
 
