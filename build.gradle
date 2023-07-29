@@ -34,6 +34,8 @@ dependencies {
     implementation 'io.micrometer:micrometer-core:1.10.8'
     implementation 'io.micrometer:micrometer-registry-prometheus:1.10.8'
 
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
+
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'io.micrometer:micrometer-observation:1.10.8'
 

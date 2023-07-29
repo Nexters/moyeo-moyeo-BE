@@ -14,8 +14,24 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
         default_batch_fetch_size: 10
 
+    mvc:
+      path match:
+        matching-strategy: ant_path_matcher
 logging.level:
   org.hibernate.SQL: debug
   org.hibernate.type: info
   com.jpa: debug
 
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    groups-order: DESC
+    operationsSorter: method
+    disable-swagger-default-url: true
+    display-request-duration: true
+  api-docs:
+    path: /api-docs
+  show-actuator: true
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
+  paths-to-match:
