@@ -1,4 +1,4 @@
-package com.nexters.moyeomoyeo.team_building.domain.user;
+package com.nexters.moyeomoyeo.team_building.domain.constant;
 
 public enum Position {
 	DESIGNER,
