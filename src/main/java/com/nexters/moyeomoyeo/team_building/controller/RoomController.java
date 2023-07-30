@@ -7,9 +7,6 @@ import lombok.*;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.*;
-import java.util.*;
-
 @RestController
 @RequestMapping("/api/rooms")
 @RequiredArgsConstructor
@@ -20,4 +17,10 @@ public class RoomController {
 	public ResponseEntity<RoomInfoResponse.RoomInfo> createRoom(@RequestBody RoomCreateRequest roomCreateRequest) {
 		return ResponseEntity.ok(roomService.createRoom(roomCreateRequest));
 	}
+
+	@GetMapping("/{roomUuid}")
+	ResponseEntity<RoomInfoResponse> entranceRoom(@PathVariable(value = "roomUuid") String roomUuid) {
+		return ResponseEntity.ok(roomService.findRoomInfo(roomUuid));
+	}
 }
+
