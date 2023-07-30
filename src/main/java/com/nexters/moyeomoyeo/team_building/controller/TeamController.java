@@ -18,8 +18,8 @@ public class TeamController {
 	private final TeamService teamService;
 
 	@PostMapping("/{roomUuid}/teams")
-	public ResponseEntity<List<RoomInfoResponse.TeamInfo>> createUser(@PathVariable(value = "roomUuid") String roomUuid,
-																	  @RequestBody TeamsCreateRequest teamsCreateRequest) {
+	public ResponseEntity<List<TeamInfo>> createUser(@PathVariable(value = "roomUuid") String roomUuid,
+													 @RequestBody TeamsCreateRequest teamsCreateRequest) {
 		return ResponseEntity.ok(teamService.createTeams(roomUuid, teamsCreateRequest));
 	}
 }

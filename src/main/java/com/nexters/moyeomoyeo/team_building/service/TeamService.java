@@ -20,15 +20,18 @@ public class TeamService {
 	private final TeamRepository teamRepository;
 
 	public List<TeamInfo> createTeams(String roomUuid, TeamsCreateRequest teamsCreateRequest) {
-		List<TeamInfo> teamsCreatedResponse = new ArrayList<>();
+		List<Team> savedTeam = new ArrayList<>();
 		Room targetRoom = roomService.findByRoomUuid(roomUuid);
 
 		for (TeamCreateRequest teamInfo : teamsCreateRequest.getTeams()) {
-			Team saved = teamRepository.save(toTeam(targetRoom, teamInfo));
-			teamsCreatedResponse.add(makeTeamInfo(saved));
+			savedTeam.add(teamRepository.save(toTeam(targetRoom, teamInfo)));
 		}
 
-		return teamsCreatedResponse;
+		targetRoom.addTeams(savedTeam);
+
+		return savedTeam.stream()
+			.map(TeamService::makeTeamInfo)
+			.toList();
 	}
 
 	public Team findByTeamUuid(String teamUuid) {
