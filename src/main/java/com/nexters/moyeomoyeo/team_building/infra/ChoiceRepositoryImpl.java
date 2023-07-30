@@ -18,7 +18,7 @@ public class ChoiceRepositoryImpl implements ChoiceRepository {
 	}
 
 	@Override
-	public Optional<UserChoice> findUserChoiceByUserAndChoiceOrder(String userUuId, Integer choiceOrder) {
-		return jpa.findUserChoiceByUserAndChoiceOrder(userUuId, choiceOrder);
+	public Optional<UserChoice> findUserChoiceByUserAndChoiceOrder(String userUuid, Integer choiceOrder) {
+		return jpa.findUserChoiceByUserAndChoiceOrder(userUuid, choiceOrder);
 	}
 }

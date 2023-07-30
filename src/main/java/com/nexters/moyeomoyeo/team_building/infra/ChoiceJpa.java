@@ -7,6 +7,6 @@ import org.springframework.data.repository.query.*;
 import java.util.*;
 
 public interface ChoiceJpa extends JpaRepository<UserChoice, Long> {
-	@Query("SELECT c FROM UserChoice c join fetch c.user, c.team where c.user.userUuid =: userUuid and c.choiceOrder =:choiceOrder ")
+	@Query("SELECT c FROM UserChoice c join fetch c.user where c.user.userUuid =: userUuid and c.choiceOrder =: choiceOrder ")
 	Optional<UserChoice> findUserChoiceByUserAndChoiceOrder(@Param("userUuid") String userUuid, @Param("choiceOrder") Integer choiceOrder);
 }
