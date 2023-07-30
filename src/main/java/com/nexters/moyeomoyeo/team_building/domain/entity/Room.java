@@ -71,6 +71,10 @@ public class Room extends BaseEntity {
 		this.users.addAll(users);
 	}
 
+	public void addUser(User user) {
+		this.users.add(user);
+	}
+
 	public void updateRoomStatus() {
 		this.roundStatus = this.getRoundStatus().getNextStatus();
 	}

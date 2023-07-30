@@ -26,7 +26,7 @@ public class UserService {
 		User savedUser = userRepository.save(toUser(createRequest, targetRoom));
 
 		savedUser.addChoices(createUserChoices(createRequest, savedUser));
-
+		targetRoom.addUser(savedUser);
 		return makeUserInfo(savedUser);
 	}
 
