@@ -28,40 +28,4 @@ public class RoomInfoResponse {
 		private String roomUrl;
 		private RoundStatus roundStatus;
 	}
-
-	@Getter
-	@NoArgsConstructor(access = AccessLevel.PRIVATE)
-	@AllArgsConstructor(access = AccessLevel.PRIVATE)
-	@Builder
-	public static class TeamInfo {
-
-		private String uuid;
-		private String teamName;
-		private String pmName;
-		private Position pmPosition;
-		private boolean isSelectDone;
-
-		public static boolean isSelectDone(RoundStatus roomStatus, RoundStatus teamStatus) {
-			if (RoundStatus.COMPLETE == roomStatus) {
-				return true;
-			}
-
-			return roomStatus.getNextStatus() == teamStatus;
-		}
-	}
-
-	@Getter
-	@NoArgsConstructor(access = AccessLevel.PRIVATE)
-	@AllArgsConstructor(access = AccessLevel.PRIVATE)
-	@Builder
-	public static class UserInfo {
-
-		private String uuid;
-		private String userName;
-		private Position position;
-		private List<String> choices;
-		private String joinedTeamUuid;
-		@Builder.Default
-		private boolean isSelectedTeam = false;
-	}
 }

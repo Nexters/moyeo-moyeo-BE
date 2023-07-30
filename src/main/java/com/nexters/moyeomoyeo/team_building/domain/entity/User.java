@@ -18,6 +18,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
 import java.util.List;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,6 +29,8 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @SuperBuilder
 public class User extends BaseEntity {
+
+	public static final int MAX_CHOICE_SIZE = 5;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -55,12 +58,32 @@ public class User extends BaseEntity {
 	@JoinColumn(name = "room_id")
 	private Room room;
 
-	protected User(String userUuid, String name, Position position, List<UserChoice> choices, Room room) {
-		this.userUuid = userUuid;
+	protected User(String name, Position position, Room room) {
 		this.name = name;
 		this.position = position;
-		this.choices = choices;
 		this.room = room;
+	}
+
+	public static User create(String name, Position position, Room room) {
+		return new User(name, position, room);
+	}
+
+	public void addChoices(List<UserChoice> choices) {
+		verifyEmptyChoice(choices);
+		verifyChoiceSize(choices);
+		this.choices = choices;
+	}
+
+	private void verifyEmptyChoice(List<UserChoice> choices) {
+		if (choices != null) {
+			throw ExceptionInfo.EMPTY_USER_CHOICE_PICK.exception();
+		}
+	}
+
+	private void verifyChoiceSize(List<UserChoice> choices) {
+		if (choices.size() > MAX_CHOICE_SIZE) {
+			throw ExceptionInfo.INVALID_SIZE_USER_CHOICE_PICK.exception();
+		}
 	}
 
 	public void addTeam(Team team) {
