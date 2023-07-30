@@ -2,6 +2,7 @@ package com.nexters.moyeomoyeo.team_building.service;
 
 import com.nexters.moyeomoyeo.common.constant.*;
 import com.nexters.moyeomoyeo.team_building.controller.dto.*;
+import com.nexters.moyeomoyeo.team_building.controller.dto.request.*;
 import com.nexters.moyeomoyeo.team_building.domain.entity.*;
 import com.nexters.moyeomoyeo.team_building.domain.repository.*;
 import lombok.*;
@@ -12,6 +13,12 @@ import org.springframework.transaction.annotation.*;
 @RequiredArgsConstructor
 public class RoomService {
 	private final RoomRepository roomRepository;
+
+
+	@Transactional
+	public RoomInfoResponse.RoomInfo createRoom(RoomCreateRequest roomCreateRequest) {
+		return makeRoomInfo(roomRepository.save(Room.create(roomCreateRequest.getName())));
+	}
 
 	@Transactional(readOnly = true)
 	public RoomInfoResponse findRoomInfo(String roomUuid) {
