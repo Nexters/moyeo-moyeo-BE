@@ -55,6 +55,7 @@ public class Room extends BaseEntity {
 	protected Room(String name, RoundStatus roundStatus) {
 		this.name = name;
 		this.roundStatus = roundStatus;
+		this.roomUuid = UuidGenerator.createUuid();
 		this.teams = new ArrayList<>();
 		this.users = new ArrayList<>();
 	}
