@@ -69,15 +69,8 @@ public class User extends BaseEntity {
 	}
 
 	public void addChoices(List<UserChoice> choices) {
-		verifyEmptyChoice(choices);
 		verifyChoiceSize(choices);
 		this.choices = choices;
-	}
-
-	private void verifyEmptyChoice(List<UserChoice> choices) {
-		if (choices != null) {
-			throw ExceptionInfo.EMPTY_USER_CHOICE_PICK.exception();
-		}
 	}
 
 	private void verifyChoiceSize(List<UserChoice> choices) {

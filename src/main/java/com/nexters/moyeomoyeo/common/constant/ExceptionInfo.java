@@ -11,7 +11,6 @@ public enum ExceptionInfo {
 	INVALID_ROOM_UUID("방을 찾을 수 없습니다.", HttpStatus.BAD_REQUEST),
 	INVALID_TEAM_UUID("팀을 찾을 수 없습니다.", HttpStatus.BAD_REQUEST),
 	INVALID_SIZE_USER_CHOICE_PICK("선택한 지망이 부족합니다.", HttpStatus.BAD_REQUEST),
-	EMPTY_USER_CHOICE_PICK("선택한 지망이 없습니다.", HttpStatus.BAD_REQUEST),
 	INVALID_USER_CHOICE_ORDER("팀 지망은 반드시 숫자여야 합니다.", HttpStatus.BAD_REQUEST),
 	BAD_REQUEST_FOR_USER_PICK("해당 유저를 선택할 수 없습니다.", HttpStatus.BAD_REQUEST),
 	ALREADY_JOINED_USER("다른 팀에 배정되어 있는 유저입니다.", HttpStatus.BAD_REQUEST),
