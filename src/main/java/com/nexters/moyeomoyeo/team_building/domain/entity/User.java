@@ -17,7 +17,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
-import java.util.List;
+
+import java.util.*;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -48,7 +49,7 @@ public class User extends BaseEntity {
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@OrderBy("choice_order asc")
-	private List<UserChoice> choices;
+	private List<UserChoice> choices = new ArrayList<>();
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "team_id")
@@ -62,6 +63,7 @@ public class User extends BaseEntity {
 		this.name = name;
 		this.position = position;
 		this.room = room;
+		this.userUuid = UuidGenerator.createUuid();
 	}
 
 	public static User create(String name, Position position, Room room) {

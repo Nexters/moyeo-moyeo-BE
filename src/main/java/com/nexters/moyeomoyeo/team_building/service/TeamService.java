@@ -35,12 +35,11 @@ public class TeamService {
 	}
 
 	public Team findByTeamUuid(String teamUuid) {
-		return teamRepository.findByTeamUuid(teamUuid).orElseThrow(
-			() -> INVALID_TEAM_UUID.exception());
+		return teamRepository.findByTeamUuid(teamUuid).orElseThrow(INVALID_TEAM_UUID::exception);
 	}
 
 	private static Team toTeam(Room targetRoom, TeamCreateRequest teamInfo) {
-		return Team.create(teamInfo.getName(), teamInfo.getPmName(), targetRoom);
+		return Team.create(teamInfo.getName(), teamInfo.getPmName(),teamInfo.getPmPosition(), targetRoom);
 	}
 
 	public static TeamInfo makeTeamInfo(Team team) {
