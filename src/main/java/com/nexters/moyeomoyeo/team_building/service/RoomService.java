@@ -2,7 +2,6 @@ package com.nexters.moyeomoyeo.team_building.service;
 
 import com.nexters.moyeomoyeo.common.constant.*;
 import com.nexters.moyeomoyeo.team_building.controller.dto.*;
-import com.nexters.moyeomoyeo.team_building.controller.dto.request.*;
 import com.nexters.moyeomoyeo.team_building.domain.entity.*;
 import com.nexters.moyeomoyeo.team_building.domain.repository.*;
 import lombok.*;
@@ -16,8 +15,8 @@ public class RoomService {
 
 
 	@Transactional
-	public RoomInfoResponse.RoomInfo createRoom(RoomCreateRequest roomCreateRequest) {
-		return makeRoomInfo(roomRepository.save(Room.create(roomCreateRequest.getName())));
+	public RoomInfoResponse.RoomInfo createRoom(String roomName) {
+		return makeRoomInfo(roomRepository.save(Room.create(roomName)));
 	}
 
 	@Transactional(readOnly = true)

@@ -2,7 +2,8 @@ package com.nexters.moyeomoyeo.team_building.controller;
 
 import com.nexters.moyeomoyeo.common.exception.dto.*;
 import com.nexters.moyeomoyeo.team_building.controller.dto.*;
-import com.nexters.moyeomoyeo.team_building.service.TeamBuildingService;
+import com.nexters.moyeomoyeo.team_building.controller.dto.request.*;
+import com.nexters.moyeomoyeo.team_building.service.*;
 import io.swagger.v3.oas.annotations.*;
 import io.swagger.v3.oas.annotations.media.*;
 import io.swagger.v3.oas.annotations.responses.*;
@@ -16,6 +17,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import jakarta.validation.*;
+import lombok.*;
+import org.springframework.http.*;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/rooms")
@@ -23,6 +28,20 @@ import org.springframework.web.bind.annotation.RestController;
 public class TeamBuildingController {
 
 	private final TeamBuildingService teamBuildingService;
+
+
+	@Operation(summary = "팀 빌딩 방 생성 요청", description = "팀빌딩 방과 팀들이 생성됩니다. ")
+	@ApiResponses({
+		@ApiResponse(responseCode = "200", description = "OK",
+			content = @Content(schema = @Schema(implementation = RoomInfoResponse.class))),
+		@ApiResponse(responseCode = "400", description = "BAD REQUEST",
+			content = {@Content(mediaType = "application/json",
+				schema = @Schema(implementation = ExceptionResponse.class))})
+	})
+	@PostMapping
+	public ResponseEntity<RoomInfoResponse> createTeamBuilding(@RequestBody TeamBuildingCreateRequest teamBuildingCreateRequest) {
+		return ResponseEntity.ok(teamBuildingService.createTeamBuilding(teamBuildingCreateRequest));
+	}
 
 
 	@Operation(summary = "팀 빌딩 방 전체 데이터 조회 요청", description = "팀빌딩 내에 있는 데이터가 조회됩니다. ")

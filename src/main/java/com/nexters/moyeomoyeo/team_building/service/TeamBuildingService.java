@@ -11,13 +11,16 @@ import com.nexters.moyeomoyeo.team_building.domain.constant.RoundStatus;
 import com.nexters.moyeomoyeo.team_building.domain.entity.Room;
 import com.nexters.moyeomoyeo.team_building.domain.entity.Team;
 import com.nexters.moyeomoyeo.team_building.domain.entity.User;
+import com.nexters.moyeomoyeo.team_building.controller.dto.*;
+import com.nexters.moyeomoyeo.team_building.controller.dto.request.*;
 
-import java.util.List;
-import java.util.Objects;
+import lombok.*;
+import org.springframework.stereotype.*;
+import org.springframework.transaction.annotation.*;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import java.util.*;
+
+import static com.nexters.moyeomoyeo.team_building.service.UserService.isSelectedTeam;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +28,20 @@ public class TeamBuildingService {
 
 	private final NotificationService notificationService;
 	private final RoomService roomService;
+	private final TeamService teamService;
+
+	@Transactional
+	public RoomInfoResponse createTeamBuilding(TeamBuildingCreateRequest teamBuildingCreateRequest) {
+		RoomInfoResponse.RoomInfo savedRoomInfo = roomService.createRoom(teamBuildingCreateRequest.getName());
+
+		List<TeamInfo> savedTeams = teamService.createTeams(savedRoomInfo.getRoomUrl(), teamBuildingCreateRequest.getTeams());
+
+		return RoomInfoResponse.builder()
+			.roomInfo(savedRoomInfo)
+			.teamInfoList(savedTeams)
+			.userInfoList(null)
+			.build();
+	}
 
 	private static UserInfo makeUserInfo(User user) {
 		final List<String> choices = user.getChoices().stream()

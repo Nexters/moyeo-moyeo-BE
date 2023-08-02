@@ -19,11 +19,11 @@ public class TeamService {
 	private final RoomService roomService;
 	private final TeamRepository teamRepository;
 
-	public List<TeamInfo> createTeams(String roomUuid, TeamsCreateRequest teamsCreateRequest) {
+	public List<TeamInfo> createTeams(String roomUuid, List<TeamCreateRequest> teamCreateRequests) {
 		List<Team> savedTeam = new ArrayList<>();
 		Room targetRoom = roomService.findByRoomUuid(roomUuid);
 
-		for (TeamCreateRequest teamInfo : teamsCreateRequest.getTeams()) {
+		for (TeamCreateRequest teamInfo : teamCreateRequests) {
 			savedTeam.add(teamRepository.save(toTeam(targetRoom, teamInfo)));
 		}
 
