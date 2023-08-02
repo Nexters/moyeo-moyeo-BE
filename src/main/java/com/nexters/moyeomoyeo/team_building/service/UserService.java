@@ -5,6 +5,7 @@ import com.nexters.moyeomoyeo.team_building.controller.dto.request.*;
 import com.nexters.moyeomoyeo.team_building.domain.entity.*;
 import com.nexters.moyeomoyeo.team_building.domain.repository.*;
 import jakarta.transaction.*;
+import jakarta.validation.*;
 import lombok.*;
 import org.springframework.stereotype.*;
 import org.springframework.util.*;
@@ -21,7 +22,7 @@ public class UserService {
 	private final TeamService teamService;
 
 	@Transactional
-	public UserInfo createUser(String roomUuid, UserCreateRequest createRequest) {
+	public UserInfo createUser(String roomUuid, @Valid UserCreateRequest createRequest) {
 		Room targetRoom = roomService.findByRoomUuid(roomUuid);
 		User savedUser = userRepository.save(toUser(createRequest, targetRoom));
 

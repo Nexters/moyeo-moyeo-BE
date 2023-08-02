@@ -6,6 +6,7 @@ import lombok.*;
 
 import java.util.*;
 
+
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -15,6 +16,6 @@ public class UserCreateRequest {
 	private String name;
 	@NotNull
 	private Position position;
-	@NotNull
+	@Size(min = 4 , max = 4 , message = "선택한 지망이 부족합니다.")
 	private List<String> choices;
 }

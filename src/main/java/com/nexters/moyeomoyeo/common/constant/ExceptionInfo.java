@@ -15,7 +15,7 @@ public enum ExceptionInfo {
 	BAD_REQUEST_FOR_USER_PICK("해당 유저를 선택할 수 없습니다.", HttpStatus.BAD_REQUEST),
 	ALREADY_JOINED_USER("다른 팀에 배정되어 있는 유저입니다.", HttpStatus.BAD_REQUEST),
 	COMPLETED_TEAM_BUILDING("이미 종료된 팀빌딩입니다.", HttpStatus.BAD_REQUEST);
-
+	@Getter
 	private final String message;
 	private final HttpStatus status;
 
@@ -37,5 +37,12 @@ public enum ExceptionInfo {
 			.message(this.message)
 			.status(this.status)
 			.build();
+	}
+
+	@Override
+	public String toString() {
+		return "ExceptionInfo{" +
+			"message='" + message + '\'' +
+			'}';
 	}
 }
