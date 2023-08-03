@@ -3,6 +3,8 @@ package com.nexters.moyeomoyeo.team_building.service;
 import static com.nexters.moyeomoyeo.team_building.controller.dto.RoomInfoResponse.TeamInfo.isSelectDone;
 
 import com.nexters.moyeomoyeo.common.constant.ExceptionInfo;
+import com.nexters.moyeomoyeo.notification.handler.SseEmitterHandler;
+import com.nexters.moyeomoyeo.notification.service.NotificationService;
 import com.nexters.moyeomoyeo.team_building.controller.dto.RoomInfoResponse;
 import com.nexters.moyeomoyeo.team_building.controller.dto.RoomInfoResponse.RoomInfo;
 import com.nexters.moyeomoyeo.team_building.controller.dto.RoomInfoResponse.TeamInfo;
@@ -14,8 +16,6 @@ import com.nexters.moyeomoyeo.team_building.domain.entity.Room;
 import com.nexters.moyeomoyeo.team_building.domain.entity.Team;
 import com.nexters.moyeomoyeo.team_building.domain.entity.User;
 import com.nexters.moyeomoyeo.team_building.domain.repository.RoomRepository;
-import com.nexters.moyeomoyeo.team_building.domain.repository.TeamRepository;
-import com.nexters.moyeomoyeo.team_building.domain.repository.UserRepository;
 import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
@@ -27,9 +27,9 @@ import org.springframework.util.CollectionUtils;
 @RequiredArgsConstructor
 public class TeamBuildingService {
 
+	private final NotificationService notificationService;
+	private final SseEmitterHandler sseEmitterHandler;
 	private final RoomRepository roomRepository;
-	private final TeamRepository teamRepository;
-	private final UserRepository userRepository;
 
 	private static UserInfo makeUserInfo(User user) {
 		final List<String> choices = user.getChoices().stream()
@@ -160,6 +160,8 @@ public class TeamBuildingService {
 		if (isAllTeamSelected(room.getTeams(), room.getRoundStatus())) {
 			room.updateRoomStatus();
 		}
+
+		notificationService.broadCast("pick-user", userUuids);
 
 		return UserPickResponse.builder()
 			.userInfoList(targetTeam.getUsers().stream().map(TeamBuildingService::makeUserInfo).toList())
