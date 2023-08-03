@@ -3,7 +3,6 @@ package com.nexters.moyeomoyeo.team_building.service;
 import static com.nexters.moyeomoyeo.team_building.controller.dto.RoomInfoResponse.TeamInfo.isSelectDone;
 
 import com.nexters.moyeomoyeo.common.constant.ExceptionInfo;
-import com.nexters.moyeomoyeo.notification.handler.SseEmitterHandler;
 import com.nexters.moyeomoyeo.notification.service.NotificationService;
 import com.nexters.moyeomoyeo.team_building.controller.dto.RoomInfoResponse;
 import com.nexters.moyeomoyeo.team_building.controller.dto.RoomInfoResponse.RoomInfo;
@@ -28,7 +27,6 @@ import org.springframework.util.CollectionUtils;
 public class TeamBuildingService {
 
 	private final NotificationService notificationService;
-	private final SseEmitterHandler sseEmitterHandler;
 	private final RoomRepository roomRepository;
 
 	private static UserInfo makeUserInfo(User user) {
