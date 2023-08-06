@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,7 +26,7 @@ public class TeamBuildingController {
 		return ResponseEntity.ok(teamBuildingService.findRoomInfo(roomUuid));
 	}
 
-	@PutMapping("/{roomUuid}/teams/{teamUuid}/users")
+	@PostMapping("/{roomUuid}/teams/{teamUuid}/users")
 	public ResponseEntity<UserPickResponse> pickUsers(
 		@PathVariable(value = "roomUuid") String roomUuid,
 		@PathVariable(value = "teamUuid") String teamUuid,
