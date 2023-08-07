@@ -137,7 +137,6 @@ public class TeamBuildingService {
 			room.updateRoomStatus();
 		}
 
-		return UserPickResponse.builder().userInfoList(targetTeam.getUsers().stream().map(UserService::makeUserInfo).toList()).build();
 		notificationService.broadCast("pick-user", userUuids);
 
 		return UserPickResponse.builder()
