@@ -1,6 +1,5 @@
 package com.nexters.moyeomoyeo.team_building.controller.dto;
 
-import com.nexters.moyeomoyeo.team_building.controller.dto.RoomInfoResponse.UserInfo;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

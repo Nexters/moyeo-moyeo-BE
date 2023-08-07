@@ -3,6 +3,8 @@ package com.nexters.moyeomoyeo.team_building.controller.dto;
 import com.nexters.moyeomoyeo.team_building.domain.constant.Position;
 import com.nexters.moyeomoyeo.team_building.domain.constant.RoundStatus;
 import java.util.List;
+
+import io.swagger.v3.oas.annotations.media.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,8 +17,11 @@ import lombok.NoArgsConstructor;
 @Builder
 public class RoomInfoResponse {
 
+	@Schema(description = "팀 빌딩 정보")
 	private RoomInfo roomInfo;
+	@Schema(description = "팀빌딩에 참여하는 팀 정보")
 	private List<TeamInfo> teamInfoList;
+	@Schema(description = "팀빌딩에 참여하는 회원 정보")
 	private List<UserInfo> userInfoList;
 
 	@Getter
@@ -24,44 +29,9 @@ public class RoomInfoResponse {
 	@AllArgsConstructor(access = AccessLevel.PRIVATE)
 	@Builder
 	public static class RoomInfo {
-
+		@Schema(description = "팀 빌딩 방 고유값")
 		private String roomUrl;
+		@Schema(description = "팀 빌딩 진행 상태")
 		private RoundStatus roundStatus;
-	}
-
-	@Getter
-	@NoArgsConstructor(access = AccessLevel.PRIVATE)
-	@AllArgsConstructor(access = AccessLevel.PRIVATE)
-	@Builder
-	public static class TeamInfo {
-
-		private String uuid;
-		private String teamName;
-		private String pmName;
-		private Position pmPosition;
-		private boolean isSelectDone;
-
-		public static boolean isSelectDone(RoundStatus roomStatus, RoundStatus teamStatus) {
-			if (RoundStatus.COMPLETE == roomStatus) {
-				return true;
-			}
-
-			return roomStatus.getNextStatus() == teamStatus;
-		}
-	}
-
-	@Getter
-	@NoArgsConstructor(access = AccessLevel.PRIVATE)
-	@AllArgsConstructor(access = AccessLevel.PRIVATE)
-	@Builder
-	public static class UserInfo {
-
-		private String uuid;
-		private String userName;
-		private Position position;
-		private List<String> choices;
-		private String joinedTeamUuid;
-		@Builder.Default
-		private boolean isSelectedTeam = false;
 	}
 }

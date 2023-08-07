@@ -16,7 +16,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import java.util.List;
+
+import java.util.*;
+
 import lombok.Builder.Default;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,6 +35,9 @@ public class Room extends BaseEntity {
 	@Column(name = "room_id")
 	private Long id;
 
+	@Column(name = "room_name")
+	private String name;
+
 	@Column(name = "room_uuid", length = 30, unique = true)
 	@Default
 	private String roomUuid = UuidGenerator.createUuid();
@@ -47,13 +52,16 @@ public class Room extends BaseEntity {
 	@OneToMany(mappedBy = "room", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<User> users;
 
-	protected Room(String roomUuid, RoundStatus roundStatus) {
-		this.roomUuid = roomUuid;
+	protected Room(String name, RoundStatus roundStatus) {
+		this.name = name;
 		this.roundStatus = roundStatus;
+		this.roomUuid = UuidGenerator.createUuid();
+		this.teams = new ArrayList<>();
+		this.users = new ArrayList<>();
 	}
 
-	public static Room create(String roomUuid) {
-		return new Room(roomUuid, FIRST_ROUND);
+	public static Room create(String roomName) {
+		return new Room(roomName, FIRST_ROUND);
 	}
 
 	public void addTeams(List<Team> teams) {
@@ -62,6 +70,10 @@ public class Room extends BaseEntity {
 
 	public void addUsers(List<User> users) {
 		this.users.addAll(users);
+	}
+
+	public void addUser(User user) {
+		this.users.add(user);
 	}
 
 	public void updateRoomStatus() {
