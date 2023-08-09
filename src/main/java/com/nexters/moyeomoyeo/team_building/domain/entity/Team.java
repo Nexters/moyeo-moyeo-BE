@@ -16,7 +16,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import java.util.List;
+
+import java.util.*;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -52,17 +54,19 @@ public class Team extends BaseEntity {
 	private Room room;
 
 	@OneToMany(mappedBy = "team", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private List<User> users;
+	private List<User> users = new ArrayList<>();
 
-	protected Team(String name, String teamUuid, RoundStatus roundStatus, Room room) {
+	protected Team(String name, String pmName, Position pmPosition, RoundStatus roundStatus, Room room) {
 		this.name = name;
-		this.teamUuid = teamUuid;
+		this.pmName = pmName;
+		this.pmPosition = pmPosition;
+		this.teamUuid = UuidGenerator.createUuid();
 		this.roundStatus = roundStatus;
 		this.room = room;
 	}
 
-	public static Team create(String name, String teamUuid, Room room) {
-		return new Team(name, teamUuid, RoundStatus.FIRST_ROUND, room);
+	public static Team create(String name, String pmName, Position pmPosition, Room room) {
+		return new Team(name, pmName, pmPosition, RoundStatus.FIRST_ROUND, room);
 	}
 
 	public void updateRoomStatus() {
