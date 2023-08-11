@@ -1,5 +1,6 @@
-package com.nexters.moyeomoyeo.team_building.controller.dto;
+package com.nexters.moyeomoyeo.team_building.controller.dto.request;
 
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -11,7 +12,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
-public class UserPickResponse {
+public class UserPickRequest {
 
-	private List<UserInfo> userInfoList;
+	@NotNull
+	private List<String> userUuids;
 }
