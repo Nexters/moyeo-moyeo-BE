@@ -8,6 +8,8 @@ import org.springframework.data.repository.query.Param;
 
 public interface TeamJpa extends JpaRepository<Team, Long> {
 
-	@Query("SELECT t FROM Team t join fetch t.users u where t.teamUuid =: teamUuid ")
-	Optional<Team> findByTeamUuid(@Param("teamUuid") String teamUuid);
+	Optional<Team> findByUuid(String uuid);
+
+	@Query("SELECT t FROM Team t join fetch t.users u where t.uuid =: uuid ")
+	Optional<Team> findWithUsers(@Param("uuid") String uuid);
 }
