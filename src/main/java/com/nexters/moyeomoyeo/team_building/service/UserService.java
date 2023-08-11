@@ -1,75 +1,66 @@
 package com.nexters.moyeomoyeo.team_building.service;
 
-import com.nexters.moyeomoyeo.team_building.controller.dto.*;
-import com.nexters.moyeomoyeo.team_building.controller.dto.request.*;
-import com.nexters.moyeomoyeo.team_building.domain.entity.*;
-import com.nexters.moyeomoyeo.team_building.domain.repository.*;
-import jakarta.transaction.*;
-import jakarta.validation.*;
-import lombok.*;
-import org.springframework.stereotype.*;
-import org.springframework.util.*;
+import static com.nexters.moyeomoyeo.team_building.controller.dto.response.UserInfo.makeUserInfo;
 
-import java.util.*;
+import com.nexters.moyeomoyeo.common.constant.ExceptionInfo;
+import com.nexters.moyeomoyeo.team_building.controller.dto.request.UserRequest;
+import com.nexters.moyeomoyeo.team_building.controller.dto.response.UserInfo;
+import com.nexters.moyeomoyeo.team_building.domain.entity.User;
+import com.nexters.moyeomoyeo.team_building.domain.entity.UserChoice;
+import com.nexters.moyeomoyeo.team_building.domain.repository.UserRepository;
+import jakarta.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
-	private final RoomService roomService;
-	private final UserRepository userRepository;
-	private final ChoiceService choiceService;
+
+	private final TeamBuildingService teamBuildingService;
 	private final TeamService teamService;
+	private final UserRepository userRepository;
 
 	@Transactional
-	public UserInfo createUser(String roomUuid, @Valid UserCreateRequest createRequest) {
-		Room targetRoom = roomService.findByRoomUuid(roomUuid);
-		User savedUser = userRepository.save(toUser(createRequest, targetRoom));
+	public UserInfo createUser(String teamBuildingUuid, UserRequest request) {
+		final User user = User.builder()
+			.name(request.getName())
+			.position(request.getPosition())
+			.profileLink(request.getProfileLink())
+			.build();
 
-		savedUser.addChoices(createUserChoices(createRequest, savedUser));
-		targetRoom.addUser(savedUser);
-		return makeUserInfo(savedUser);
+		final List<UserChoice> choices = createUserChoices(request.getChoices());
+		for (final UserChoice choice : choices) {
+			choice.addUser(user);
+		}
+
+		user.addTeamBuilding(teamBuildingService.findByUuid(teamBuildingUuid));
+
+		return makeUserInfo(userRepository.save(user));
 	}
 
-	private static User toUser(UserCreateRequest createRequest, Room targetRoom) {
-		return User.create(createRequest.getName(), createRequest.getPosition(), targetRoom);
-	}
-
-	private List<UserChoice> createUserChoices(UserCreateRequest createRequest, User targetUser) {
-		List<UserChoice> choices = new ArrayList<>();
+	private List<UserChoice> createUserChoices(List<String> teamUuids) {
+		final List<UserChoice> choices = new ArrayList<>();
 		int choiceOrder = 1;
 
-		for (String choice : createRequest.getChoices()) {
-			Team choicedTeam = teamService.findByTeamUuid(choice);
-			UserChoice userChoice = choiceService.createUserChoice(choiceOrder++, targetUser, choicedTeam);
+		for (final String teamUuid : teamUuids) {
+			final UserChoice userChoice = UserChoice.builder()
+				.choiceOrder(choiceOrder++)
+				.teamUuid(teamUuid)
+				.build();
 
 			choices.add(userChoice);
 		}
 		return choices;
 	}
 
-	public static UserInfo makeUserInfo(User user) {
-		final List<String> choices = user.getChoices().stream()
-			.map(userChoice -> userChoice.getTeam().getTeamUuid())
-			.toList();
+	@Transactional
+	public UserInfo adjustUser(String userUuid, String teamUuid) {
+		final User user = userRepository.findByUuid(userUuid).orElseThrow(ExceptionInfo.INVALID_USER_UUID::exception);
 
-		final String joinedTeamUuid = Objects.isNull(user.getTeam()) ? null : user.getTeam().getTeamUuid();
+		user.adjustTeam(teamService.findByUuid(teamUuid).orElse(null));
 
-		return UserInfo.builder()
-			.uuid(user.getUserUuid())
-			.userName(user.getName())
-			.position(user.getPosition())
-			.choices(choices)
-			.joinedTeamUuid(joinedTeamUuid)
-			.isSelectedTeam(isSelectedTeam(choices, joinedTeamUuid))
-			.build();
-	}
-
-	public static boolean isSelectedTeam(List<String> choices, String joinedTeamUuid) {
-		if (CollectionUtils.isEmpty(choices)) {
-			return false;
-		}
-
-		return choices.contains(joinedTeamUuid);
+		return makeUserInfo(user);
 	}
 }
