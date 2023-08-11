@@ -1,9 +1,11 @@
 package com.nexters.moyeomoyeo.team_building.domain.entity;
 
+
+import static com.nexters.moyeomoyeo.team_building.domain.constant.RoundStatus.FIRST_ROUND;
+
 import com.nexters.moyeomoyeo.common.constant.ExceptionInfo;
 import com.nexters.moyeomoyeo.common.entity.BaseEntity;
 import com.nexters.moyeomoyeo.common.util.UuidGenerator;
-import com.nexters.moyeomoyeo.team_building.domain.constant.Position;
 import com.nexters.moyeomoyeo.team_building.domain.constant.RoundStatus;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -14,57 +16,46 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Builder.Default;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 @Entity
 @Getter
-@NoArgsConstructor
 @SuperBuilder
-public class Team extends BaseEntity {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+public class TeamBuilding extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+
 	private String name;
 
-	private String pmName;
-
-	@Enumerated(EnumType.STRING)
-	private Position pmPosition;
-
 	@Column(length = 30, unique = true)
-	@Builder.Default
+	@Default
 	private String uuid = UuidGenerator.createUuid();
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "round_status")
-	private RoundStatus roundStatus;
+	@Builder.Default
+	private RoundStatus roundStatus = FIRST_ROUND;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "team_building_id")
-	private TeamBuilding teamBuilding;
+	@OneToMany(mappedBy = "teamBuilding", cascade = CascadeType.ALL)
+	@Builder.Default
+	private List<Team> teams = new ArrayList<>();
 
-	@OneToMany(mappedBy = "team", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "teamBuilding", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@Builder.Default
 	private List<User> users = new ArrayList<>();
-
-	protected Team(String name, String pmName, Position pmPosition, RoundStatus roundStatus,
-		TeamBuilding teamBuilding) {
-		this.name = name;
-		this.pmName = pmName;
-		this.pmPosition = pmPosition;
-		this.uuid = UuidGenerator.createUuid();
-		this.roundStatus = roundStatus;
-		this.teamBuilding = teamBuilding;
-	}
 
 	public void nextRound() {
 		if (this.roundStatus == RoundStatus.COMPLETE) {
@@ -73,9 +64,6 @@ public class Team extends BaseEntity {
 
 		this.roundStatus = this.roundStatus.getNextStatus();
 	}
-
-	public void addTeamBuilding(TeamBuilding teamBuilding) {
-		this.teamBuilding = teamBuilding;
-		this.teamBuilding.getTeams().add(this);
-	}
 }
+
+

@@ -1,6 +1,5 @@
 package com.nexters.moyeomoyeo.team_building.domain.entity;
 
-import com.nexters.moyeomoyeo.common.constant.*;
 import com.nexters.moyeomoyeo.common.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -22,7 +21,7 @@ public class UserChoice extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "choice_id")
+	@Column(name = "id")
 	private Long id;
 
 	@Column(name = "choice_order")
@@ -32,25 +31,10 @@ public class UserChoice extends BaseEntity {
 	@JoinColumn(name = "user_id")
 	private User user;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "team_id")
-	private Team team;
+	private String teamUuid;
 
-
-	protected UserChoice(Integer choiceOrder, User user, Team team) {
-		this.choiceOrder = choiceOrder;
+	public void addUser(User user) {
 		this.user = user;
-		this.team = team;
-	}
-
-	public static UserChoice create(Integer choiceOrder, User user, Team team) {
-		verifyChoiceOrder(choiceOrder);
-		return new UserChoice(choiceOrder, user, team);
-	}
-
-	private static void verifyChoiceOrder(int choiceOrder) {
-		if (choiceOrder < 0 || choiceOrder > 5) {
-			throw ExceptionInfo.INVALID_USER_CHOICE_ORDER.exception();
-		}
+		this.user.getChoices().add(this);
 	}
 }
