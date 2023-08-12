@@ -1,7 +1,5 @@
 package com.nexters.moyeomoyeo.team_building.service;
 
-import static com.nexters.moyeomoyeo.team_building.controller.dto.response.UserInfo.makeUserInfo;
-
 import com.nexters.moyeomoyeo.common.constant.ExceptionInfo;
 import com.nexters.moyeomoyeo.notification.service.NotificationService;
 import com.nexters.moyeomoyeo.team_building.controller.dto.request.UserRequest;
@@ -10,12 +8,13 @@ import com.nexters.moyeomoyeo.team_building.domain.entity.User;
 import com.nexters.moyeomoyeo.team_building.domain.entity.UserChoice;
 import com.nexters.moyeomoyeo.team_building.domain.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import static com.nexters.moyeomoyeo.team_building.controller.dto.response.UserInfo.makeUserInfo;
 
 @Service
 @RequiredArgsConstructor
@@ -44,13 +43,17 @@ public class UserService {
 
 	@Transactional
 	public UserInfo adjustUser(String teamBuildingUuid, String userUuid, String teamUuid) {
-		final User user = userRepository.findByUuid(userUuid).orElseThrow(ExceptionInfo.INVALID_USER_UUID::exception);
+		final User user = findUser(userUuid);
 
 		user.adjustTeam(teamService.findByUuid(teamUuid).orElse(null));
 		UserInfo userInfo = makeUserInfo(user);
 
 		notificationService.broadCast(teamBuildingUuid, "adjust-user", userInfo);
 		return userInfo;
+	}
+
+	private User findUser(String userUuid) {
+		return userRepository.findByUuid(userUuid).orElseThrow(ExceptionInfo.INVALID_USER_UUID::exception);
 	}
 
 	private static User makeUser(UserRequest request) {
@@ -75,5 +78,15 @@ public class UserService {
 			choices.add(userChoice);
 		}
 		return choices;
+	}
+
+	@Transactional
+	public void deleteUser(String teamBuildingUuid, String userUuid) {
+		final User targetUser = findUser(userUuid);
+
+		userRepository.delete(targetUser);
+		notificationService.broadCast(teamBuildingUuid, "delete-user", userUuid);
+
+
 	}
 }
