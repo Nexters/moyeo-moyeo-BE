@@ -39,6 +39,8 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'io.micrometer:micrometer-observation:1.10.8'
 
+    implementation 'com.google.code.findbugs:jsr305:3.0.2'
+
 }
 
 test {
