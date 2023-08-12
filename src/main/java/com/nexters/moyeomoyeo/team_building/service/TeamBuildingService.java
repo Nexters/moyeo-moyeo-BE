@@ -130,7 +130,7 @@ public class TeamBuildingService {
 			teamBuilding.nextRound();
 		}
 
-		notificationService.broadCast("pick-user", userUuids);
+		notificationService.broadCast(teamBuilding.getUuid(), "pick-user", userUuids);
 
 		return UserPickResponse.builder()
 			.userInfoList(targetTeam.getUsers().stream().map(UserInfo::makeUserInfo).toList())
