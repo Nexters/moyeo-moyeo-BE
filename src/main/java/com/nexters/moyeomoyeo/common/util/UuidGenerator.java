@@ -5,7 +5,10 @@ import java.nio.ByteBuffer;
 import java.util.Base64;
 import java.util.Base64.Encoder;
 import java.util.UUID;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UuidGenerator {
 
 	private static final Encoder BASE64_URL_ENCODER = Base64.getUrlEncoder().withoutPadding();

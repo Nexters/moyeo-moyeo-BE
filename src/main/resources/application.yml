@@ -25,7 +25,7 @@ logging.level:
   org.hibernate.type: info
   com.jpa: debug
 
-springdoc:
+spring-doc:
   swagger-ui:
     path: /swagger-ui.html
     groups-order: DESC

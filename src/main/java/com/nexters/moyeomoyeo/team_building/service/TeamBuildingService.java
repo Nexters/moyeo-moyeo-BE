@@ -99,8 +99,8 @@ public class TeamBuildingService {
 
 
 	@Transactional
-	public UserPickResponse pickUsers(String uuid, String teamUuid, UserPickRequest userPickRequest) {
-		final TeamBuilding teamBuilding = findWithTeamsAndUsers(uuid);
+	public UserPickResponse pickUsers(String teamBuildingUuid, String teamUuid, UserPickRequest userPickRequest) {
+		final TeamBuilding teamBuilding = findWithTeamsAndUsers(teamBuildingUuid);
 
 		if (RoundStatus.COMPLETE == teamBuilding.getRoundStatus()) {
 			throw ExceptionInfo.COMPLETED_TEAM_BUILDING.exception();
