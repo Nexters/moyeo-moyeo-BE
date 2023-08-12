@@ -1,6 +1,10 @@
 package com.nexters.moyeomoyeo.notification.handler;
 
+import com.nexters.moyeomoyeo.common.constant.ExceptionInfo;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -10,23 +14,35 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 @Component
 public class SseEmitterHandler {
 
-	private final List<SseEmitter> emitters = new CopyOnWriteArrayList<>();
+	// key : teamBuildingUuid
+	private final Map<String, List<SseEmitter>> emitterMap = new HashMap<>();
 
-	public List<SseEmitter> getEmitters() {
-		return emitters;
+	public List<SseEmitter> getEmitters(String teamBuildingUuid) {
+		final List<SseEmitter> emitterList = emitterMap.get(teamBuildingUuid);
+
+		if (Objects.isNull(emitterList)) {
+			throw ExceptionInfo.INVALID_TEAM_BUILDING_UUID.exception();
+		}
+
+		return emitterList;
 	}
 
-	public void add(SseEmitter emitter) {
-		this.emitters.add(emitter);
+	public void add(String teamBuildingUuid, SseEmitter emitter) {
+		final List<SseEmitter> emitterList = Objects.isNull(this.emitterMap.get(teamBuildingUuid)) ?
+			new CopyOnWriteArrayList<>() : this.emitterMap.get(teamBuildingUuid);
+
+		emitterList.add(emitter);
+		emitterMap.put(teamBuildingUuid, emitterList);
+
 		log.info("new emitter added: {}", emitter);
-		log.info("emitter list size: {}", emitters.size());
+		log.info("emitter list size: {}", emitterList.size());
 		emitter.onCompletion(() -> {
 			log.info("onCompletion callback");
-			this.emitters.remove(emitter);
+			emitterList.remove(emitter);
 		});
 		emitter.onTimeout(() -> {
 			log.info("onTimeout callback");
-			this.emitters.remove(emitter);
+			emitterList.remove(emitter);
 		});
 	}
 }
