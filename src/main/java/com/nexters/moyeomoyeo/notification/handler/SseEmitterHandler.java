@@ -1,6 +1,6 @@
 package com.nexters.moyeomoyeo.notification.handler;
 
-import com.nexters.moyeomoyeo.common.constant.ExceptionInfo;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +21,7 @@ public class SseEmitterHandler {
 		final List<SseEmitter> emitterList = emitterMap.get(teamBuildingUuid);
 
 		if (Objects.isNull(emitterList)) {
-			throw ExceptionInfo.INVALID_TEAM_BUILDING_UUID.exception();
+			return Collections.emptyList();
 		}
 
 		return emitterList;
