@@ -3,14 +3,17 @@ package com.nexters.moyeomoyeo.team_building.service;
 import static com.nexters.moyeomoyeo.team_building.controller.dto.response.UserInfo.makeUserInfo;
 
 import com.nexters.moyeomoyeo.common.constant.ExceptionInfo;
+import com.nexters.moyeomoyeo.notification.service.*;
 import com.nexters.moyeomoyeo.team_building.controller.dto.request.UserRequest;
 import com.nexters.moyeomoyeo.team_building.controller.dto.response.UserInfo;
 import com.nexters.moyeomoyeo.team_building.domain.entity.User;
 import com.nexters.moyeomoyeo.team_building.domain.entity.UserChoice;
 import com.nexters.moyeomoyeo.team_building.domain.repository.UserRepository;
 import jakarta.transaction.Transactional;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +22,7 @@ import org.springframework.stereotype.Service;
 public class UserService {
 
 	private final TeamBuildingService teamBuildingService;
+	private final NotificationService notificationService;
 	private final TeamService teamService;
 	private final UserRepository userRepository;
 
@@ -36,8 +40,10 @@ public class UserService {
 		}
 
 		user.addTeamBuilding(teamBuildingService.findByUuid(teamBuildingUuid));
+		UserInfo userInfo = makeUserInfo(userRepository.save(user));
+		notificationService.broadCast("create-user", userInfo);
 
-		return makeUserInfo(userRepository.save(user));
+		return userInfo;
 	}
 
 	private List<UserChoice> createUserChoices(List<String> teamUuids) {

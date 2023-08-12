@@ -129,6 +129,7 @@ public class TeamBuildingService {
 		targetTeam.nextRound();
 		if (isAllTeamSelected(teamBuilding.getTeams(), teamBuilding.getRoundStatus())) {
 			teamBuilding.nextRound();
+			notificationService.broadCast("change-round", teamBuilding.getRoundStatus());
 		}
 
 		PickUserResponse userResponse = PickUserResponse.builder()
