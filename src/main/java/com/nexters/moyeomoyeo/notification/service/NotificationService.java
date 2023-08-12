@@ -26,16 +26,16 @@ public class NotificationService {
 		}
 	}
 
-	public SseEmitter subscribe() {
+	public SseEmitter subscribe(String teamBuildingUuid) {
 		final SseEmitter emitter = new SseEmitter(DEFAULT_TIMEOUT);
 		sendNotification(emitter, "subscribe", "subscribe completed");
-		handler.add(emitter);
+		handler.add(teamBuildingUuid, emitter);
 
 		return emitter;
 	}
 
-	public void broadCast(String name, Object data) {
-		for (final SseEmitter emitter : handler.getEmitters()) {
+	public void broadCast(String teamBuildingUuid, String name, Object data) {
+		for (final SseEmitter emitter : handler.getEmitters(teamBuildingUuid)) {
 			sendNotification(emitter, name, data);
 		}
 	}
