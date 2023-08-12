@@ -5,7 +5,9 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.nexters.moyeomoyeo.team_building.domain.constant.RoundStatus;
 import com.nexters.moyeomoyeo.team_building.domain.entity.TeamBuilding;
 import io.swagger.v3.oas.annotations.media.Schema;
+
 import java.util.List;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,12 +36,15 @@ public class TeamBuildingResponse {
 
 		@Schema(description = "팀 빌딩 방 고유값")
 		private String teamBuildingUrl;
+		@Schema(description = "팀 빌딩 이름")
+		private String teamBuildingName;
 		@Schema(description = "팀 빌딩 진행 상태")
 		private RoundStatus roundStatus;
 
 		public static TeamBuildingInfo makeTeamBuildingInfo(TeamBuilding teamBuilding) {
 			return TeamBuildingInfo.builder()
 				.teamBuildingUrl(teamBuilding.getUuid())
+				.teamBuildingName(teamBuilding.getName())
 				.roundStatus(teamBuilding.getRoundStatus())
 				.build();
 		}
