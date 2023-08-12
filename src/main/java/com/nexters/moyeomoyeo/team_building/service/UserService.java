@@ -37,19 +37,19 @@ public class UserService {
 
 		user.addTeamBuilding(teamBuildingService.findByUuid(teamBuildingUuid));
 		UserInfo userInfo = makeUserInfo(userRepository.save(user));
-		notificationService.broadCast("create-user", userInfo);
+		notificationService.broadCast(teamBuildingUuid, "create-user", userInfo);
 
 		return userInfo;
 	}
 
 	@Transactional
-	public UserInfo adjustUser(String userUuid, String teamUuid) {
+	public UserInfo adjustUser(String teamBuildingUuid, String userUuid, String teamUuid) {
 		final User user = userRepository.findByUuid(userUuid).orElseThrow(ExceptionInfo.INVALID_USER_UUID::exception);
 
 		user.adjustTeam(teamService.findByUuid(teamUuid).orElse(null));
 		UserInfo userInfo = makeUserInfo(user);
 
-		notificationService.broadCast("adjust-user", userInfo);
+		notificationService.broadCast(teamBuildingUuid, "adjust-user", userInfo);
 		return userInfo;
 	}
 
