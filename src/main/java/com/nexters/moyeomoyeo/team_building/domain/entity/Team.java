@@ -46,7 +46,8 @@ public class Team extends BaseEntity {
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "round_status")
-	private RoundStatus roundStatus;
+	@Builder.Default
+	private RoundStatus roundStatus = RoundStatus.FIRST_ROUND;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "team_building_id")
