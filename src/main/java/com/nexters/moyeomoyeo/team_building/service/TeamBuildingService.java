@@ -156,6 +156,7 @@ public class TeamBuildingService {
 		}
 
 		teamBuilding.nextRound();
+		notificationService.broadCast(teamBuilding.getUuid(), "finish-team-building", teamBuilding.getRoundStatus());
 	}
 
 	@Transactional(readOnly = true)
