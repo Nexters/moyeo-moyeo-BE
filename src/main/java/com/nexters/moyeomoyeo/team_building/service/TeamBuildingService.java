@@ -8,6 +8,7 @@ import com.nexters.moyeomoyeo.notification.service.NotificationService;
 import com.nexters.moyeomoyeo.team_building.controller.dto.request.TeamBuildingRequest;
 import com.nexters.moyeomoyeo.team_building.controller.dto.request.TeamRequest;
 import com.nexters.moyeomoyeo.team_building.controller.dto.request.UserPickRequest;
+import com.nexters.moyeomoyeo.team_building.controller.dto.response.PickUserResponse;
 import com.nexters.moyeomoyeo.team_building.controller.dto.response.TeamBuildingResponse;
 import com.nexters.moyeomoyeo.team_building.controller.dto.response.TeamInfo;
 import com.nexters.moyeomoyeo.team_building.controller.dto.response.UserInfo;
@@ -17,8 +18,10 @@ import com.nexters.moyeomoyeo.team_building.domain.entity.Team;
 import com.nexters.moyeomoyeo.team_building.domain.entity.TeamBuilding;
 import com.nexters.moyeomoyeo.team_building.domain.entity.User;
 import com.nexters.moyeomoyeo.team_building.domain.repository.TeamBuildingRepository;
+
 import java.util.List;
 import java.util.Objects;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -128,9 +131,16 @@ public class TeamBuildingService {
 		targetTeam.nextRound();
 		if (isAllTeamSelected(teamBuilding.getTeams(), teamBuilding.getRoundStatus())) {
 			teamBuilding.nextRound();
+			notificationService.broadCast(teamBuilding.getUuid(), "change-round", teamBuilding.getRoundStatus());
 		}
 
-		notificationService.broadCast(teamBuilding.getUuid(), "pick-user", userUuids);
+		PickUserResponse userResponse = PickUserResponse.builder()
+			.teamName(targetTeam.getName())
+			.teamUuid(teamUuid)
+			.pickUserUuids(userUuids)
+			.build();
+
+		notificationService.broadCast(teamBuilding.getUuid(), "pick-user", userResponse);
 
 		return UserPickResponse.builder()
 			.userInfoList(targetTeam.getUsers().stream().map(UserInfo::makeUserInfo).toList())
@@ -146,6 +156,7 @@ public class TeamBuildingService {
 		}
 
 		teamBuilding.nextRound();
+		notificationService.broadCast(teamBuilding.getUuid(), "finish-team-building", teamBuilding.getRoundStatus());
 	}
 
 	@Transactional(readOnly = true)

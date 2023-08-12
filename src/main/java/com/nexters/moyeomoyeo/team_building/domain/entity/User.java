@@ -86,10 +86,18 @@ public class User extends BaseEntity {
 		return this.choices.get(weight - 1);
 	}
 
+
+	/**
+	 * 선택한 팀이 없을 때 예외 처리
+	 * 기존 팀이 있다면 지우고 선택해주기
+	 *
+	 * @param team
+	 */
 	public void adjustTeam(@Nullable Team team) {
 		if (!Objects.isNull(this.team)) {
 			this.team.getUsers().remove(this);
 		}
+
 
 		this.team = team;
 

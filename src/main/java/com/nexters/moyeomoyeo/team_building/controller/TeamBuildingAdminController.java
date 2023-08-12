@@ -47,7 +47,7 @@ public class TeamBuildingAdminController {
 		@PathVariable(value = "teamBuildingUuid") String teamBuildingUuid,
 		@PathVariable(value = "userUuid") String userUuid,
 		@RequestBody @Valid UserAdjustRequest userAdjustRequest) {
-		return ResponseEntity.ok(userService.adjustUser(userUuid, userAdjustRequest.getTeamUuid()));
+		return ResponseEntity.ok(userService.adjustUser(teamBuildingUuid, userUuid, userAdjustRequest.getTeamUuid()));
 	}
 
 	@Operation(summary = "팀 빌딩 마치기", description = "운영진이 조정 단계에서 팀빌딩을 마칩니다.")
