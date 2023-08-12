@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -33,21 +34,23 @@ public class TeamBuildingAdminController {
 
 	@Operation(summary = "팀 빌딩 생성 요청", description = "팀빌딩 방과 팀 리스트를 생성됩니다. ")
 	@ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = TeamBuildingResponse.class)))
-	@ApiResponse(responseCode = "400", description = "BAD REQUEST", content = {
-		@Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))})
+	@ApiResponse(responseCode = "400", description = "BAD REQUEST", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))})
 	@PostMapping
-	public ResponseEntity<TeamBuildingResponse> createTeamBuilding(
-		@RequestBody @Valid TeamBuildingRequest teamBuildingRequest) {
+	public ResponseEntity<TeamBuildingResponse> createTeamBuilding(@RequestBody @Valid TeamBuildingRequest teamBuildingRequest) {
 		return ResponseEntity.ok(teamBuildingService.createTeamBuilding(teamBuildingRequest));
 	}
 
 	@Operation(summary = "조정 단계 팀원 수정 (단일 유저) ", description = "운영진이 조정단계에서 조정할 때 사용합니다. ")
 	@PostMapping("/{teamBuildingUuid}/users/{userUuid}")
-	public ResponseEntity<UserInfo> adjustUser(
-		@PathVariable(value = "teamBuildingUuid") String teamBuildingUuid,
-		@PathVariable(value = "userUuid") String userUuid,
-		@RequestBody @Valid UserAdjustRequest userAdjustRequest) {
+	public ResponseEntity<UserInfo> adjustUser(@PathVariable(value = "teamBuildingUuid") String teamBuildingUuid, @PathVariable(value = "userUuid") String userUuid, @RequestBody @Valid UserAdjustRequest userAdjustRequest) {
 		return ResponseEntity.ok(userService.adjustUser(teamBuildingUuid, userUuid, userAdjustRequest.getTeamUuid()));
+	}
+
+	@Operation(summary = "팀원 삭제 (단일 유저) ", description = "운영진이 팀원 조정할 때 사용합니다. ")
+	@DeleteMapping("/{teamBuildingUuid}/users/{userUuid}")
+	public ResponseEntity<Void> deleteUser(@PathVariable(value = "teamBuildingUuid") String teamBuildingUuid, @PathVariable(value = "userUuid") String userUuid) {
+		userService.deleteUser(teamBuildingUuid, userUuid);
+		return ResponseEntity.ok().build();
 	}
 
 	@Operation(summary = "팀 빌딩 마치기", description = "운영진이 조정 단계에서 팀빌딩을 마칩니다.")
