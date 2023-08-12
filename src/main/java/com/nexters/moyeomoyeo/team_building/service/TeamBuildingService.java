@@ -1,70 +1,34 @@
 package com.nexters.moyeomoyeo.team_building.service;
 
 
+import static com.nexters.moyeomoyeo.team_building.controller.dto.response.TeamBuildingResponse.TeamBuildingInfo.makeTeamBuildingInfo;
+
 import com.nexters.moyeomoyeo.common.constant.ExceptionInfo;
 import com.nexters.moyeomoyeo.notification.service.NotificationService;
-import com.nexters.moyeomoyeo.team_building.controller.dto.RoomInfoResponse;
-
-import com.nexters.moyeomoyeo.team_building.controller.dto.UserPickRequest;
-import com.nexters.moyeomoyeo.team_building.controller.dto.UserPickResponse;
+import com.nexters.moyeomoyeo.team_building.controller.dto.request.TeamBuildingRequest;
+import com.nexters.moyeomoyeo.team_building.controller.dto.request.TeamRequest;
+import com.nexters.moyeomoyeo.team_building.controller.dto.request.UserPickRequest;
+import com.nexters.moyeomoyeo.team_building.controller.dto.response.TeamBuildingResponse;
+import com.nexters.moyeomoyeo.team_building.controller.dto.response.TeamInfo;
+import com.nexters.moyeomoyeo.team_building.controller.dto.response.UserInfo;
+import com.nexters.moyeomoyeo.team_building.controller.dto.response.UserPickResponse;
 import com.nexters.moyeomoyeo.team_building.domain.constant.RoundStatus;
-import com.nexters.moyeomoyeo.team_building.domain.entity.Room;
 import com.nexters.moyeomoyeo.team_building.domain.entity.Team;
+import com.nexters.moyeomoyeo.team_building.domain.entity.TeamBuilding;
 import com.nexters.moyeomoyeo.team_building.domain.entity.User;
-import com.nexters.moyeomoyeo.team_building.controller.dto.*;
-import com.nexters.moyeomoyeo.team_building.controller.dto.request.*;
-
-import lombok.*;
-import org.springframework.stereotype.*;
-import org.springframework.transaction.annotation.*;
-
-import java.util.*;
-
-import static com.nexters.moyeomoyeo.team_building.service.UserService.isSelectedTeam;
+import com.nexters.moyeomoyeo.team_building.domain.repository.TeamBuildingRepository;
+import java.util.List;
+import java.util.Objects;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 public class TeamBuildingService {
 
 	private final NotificationService notificationService;
-	private final RoomService roomService;
-	private final TeamService teamService;
-
-	@Transactional
-	public RoomInfoResponse createTeamBuilding(TeamBuildingCreateRequest teamBuildingCreateRequest) {
-		RoomInfoResponse.RoomInfo savedRoomInfo = roomService.createRoom(teamBuildingCreateRequest.getName());
-
-		List<TeamInfo> savedTeams = teamService.createTeams(savedRoomInfo.getRoomUrl(), teamBuildingCreateRequest.getTeams());
-
-		return RoomInfoResponse.builder()
-			.roomInfo(savedRoomInfo)
-			.teamInfoList(savedTeams)
-			.userInfoList(null)
-			.build();
-	}
-
-	private static UserInfo makeUserInfo(User user) {
-		final List<String> choices = user.getChoices().stream()
-			.map(userChoice -> userChoice.getTeam().getTeamUuid())
-			.toList();
-
-		final String joinedTeamUuid = Objects.isNull(user.getTeam()) ? null : user.getTeam().getTeamUuid();
-
-		return UserInfo.builder()
-			.uuid(user.getUserUuid())
-			.userName(user.getName())
-			.position(user.getPosition())
-			.choices(choices)
-			.joinedTeamUuid(joinedTeamUuid)
-			.isSelectedTeam(isSelectedTeam(choices, joinedTeamUuid))
-			.build();
-	}
-
-
-	@Transactional(readOnly = true)
-	public RoomInfoResponse findRoomInfo(String roomUuid) {
-		return roomService.findRoomInfo(roomUuid);
-	}
+	private final TeamBuildingRepository teamBuildingRepository;
 
 	private static boolean isValidUser(List<String> userUuids, List<User> pickedUsers) {
 		return pickedUsers.size() == userUuids.size();
@@ -84,8 +48,7 @@ public class TeamBuildingService {
 		}
 
 		for (final User user : pickedUsers) {
-			if (!Objects.equals(user.findChoiceTeam(roundStatus.getWeight()).getTeam().getTeamUuid(),
-				team.getTeamUuid())) {
+			if (!Objects.equals(user.findChoice(roundStatus.getWeight()).getTeamUuid(), team.getUuid())) {
 				return false;
 			}
 		}
@@ -96,13 +59,13 @@ public class TeamBuildingService {
 	/**
 	 * 모든 팀이 선택을 완료했는지 판단.
 	 *
-	 * @param teams           room 의 team 들
-	 * @param roomRoundStatus 현재 room 의 round 상태
+	 * @param teams       team building 의 team 들
+	 * @param roundStatus 전체 round 상태
 	 * @return 완료됐으면 true
 	 */
-	private static boolean isAllTeamSelected(List<Team> teams, RoundStatus roomRoundStatus) {
+	private static boolean isAllTeamSelected(List<Team> teams, RoundStatus roundStatus) {
 		for (final Team team : teams) {
-			if (roomRoundStatus == team.getRoundStatus()) {
+			if (roundStatus == team.getRoundStatus()) {
 				return false;
 			}
 		}
@@ -112,17 +75,47 @@ public class TeamBuildingService {
 
 
 	@Transactional
-	public UserPickResponse pickUsers(String roomUuid, String teamUuid, UserPickRequest userPickRequest) {
-		final Room room = roomService.findByRoomUuid(roomUuid);
+	public TeamBuildingResponse createTeamBuilding(TeamBuildingRequest teamBuildingRequest) {
+		final TeamBuilding teamBuilding = TeamBuilding.builder()
+			.name(teamBuildingRequest.getName())
+			.build();
 
-		if (RoundStatus.COMPLETE == room.getRoundStatus()) {
+		final List<Team> teams = teamBuildingRequest.getTeams()
+			.stream()
+			.map(TeamRequest::toEntity)
+			.toList();
+
+		for (final Team team : teams) {
+			team.addTeamBuilding(teamBuilding);
+		}
+
+		final TeamBuilding savedTeamBuilding = teamBuildingRepository.save(teamBuilding);
+
+		return TeamBuildingResponse.builder()
+			.teamBuildingInfo(makeTeamBuildingInfo(savedTeamBuilding))
+			.teamInfoList(savedTeamBuilding.getTeams().stream().map(TeamInfo::makeTeamInfo).toList())
+			.build();
+	}
+
+
+	@Transactional
+	public UserPickResponse pickUsers(String uuid, String teamUuid, UserPickRequest userPickRequest) {
+		final TeamBuilding teamBuilding = findWithTeamsAndUsers(uuid);
+
+		if (RoundStatus.COMPLETE == teamBuilding.getRoundStatus()) {
 			throw ExceptionInfo.COMPLETED_TEAM_BUILDING.exception();
 		}
 
-		final Team targetTeam = room.getTeams().stream().filter(team -> teamUuid.equals(team.getTeamUuid())).findFirst().orElseThrow(ExceptionInfo.INVALID_TEAM_UUID::exception);
+		final Team targetTeam = teamBuilding.getTeams()
+			.stream()
+			.filter(team -> teamUuid.equals(team.getUuid()))
+			.findFirst()
+			.orElseThrow(ExceptionInfo.INVALID_TEAM_UUID::exception);
 
 		final List<String> userUuids = userPickRequest.getUserUuids();
-		final List<User> pickedUsers = room.getUsers().stream().filter(user -> userUuids.contains(user.getUserUuid())).toList();
+		final List<User> pickedUsers = teamBuilding.getUsers().stream()
+			.filter(user -> userUuids.contains(user.getUuid()))
+			.toList();
 
 		if (!isValidUser(userUuids, pickedUsers) || !isChosenTeam(targetTeam, pickedUsers)) {
 			throw ExceptionInfo.BAD_REQUEST_FOR_USER_PICK.exception();
@@ -132,15 +125,57 @@ public class TeamBuildingService {
 			user.addTeam(targetTeam);
 		}
 
-		targetTeam.updateRoomStatus();
-		if (isAllTeamSelected(room.getTeams(), room.getRoundStatus())) {
-			room.updateRoomStatus();
+		targetTeam.nextRound();
+		if (isAllTeamSelected(teamBuilding.getTeams(), teamBuilding.getRoundStatus())) {
+			teamBuilding.nextRound();
 		}
 
 		notificationService.broadCast("pick-user", userUuids);
 
 		return UserPickResponse.builder()
-			.userInfoList(targetTeam.getUsers().stream().map(TeamBuildingService::makeUserInfo).toList())
+			.userInfoList(targetTeam.getUsers().stream().map(UserInfo::makeUserInfo).toList())
 			.build();
+	}
+
+	@Transactional
+	public void finishTeamBuilding(String uuid) {
+		final TeamBuilding teamBuilding = findWithTeamsAndUsers(uuid);
+
+		if (RoundStatus.ADJUSTED_ROUND != teamBuilding.getRoundStatus()) {
+			throw ExceptionInfo.INVALID_FINISH_REQUEST.exception();
+		}
+
+		teamBuilding.nextRound();
+	}
+
+	@Transactional(readOnly = true)
+	public TeamBuildingResponse findTeamBuildingAndTeams(String roomUuid) {
+		final TeamBuilding teamBuilding = findWithTeamsAndUsers(roomUuid);
+
+		return TeamBuildingResponse.builder()
+			.teamBuildingInfo(makeTeamBuildingInfo(teamBuilding))
+			.teamInfoList(teamBuilding.getTeams().stream().map(TeamInfo::makeTeamInfo).toList())
+			.build();
+	}
+
+	@Transactional(readOnly = true)
+	public TeamBuildingResponse findTeamBuilding(String roomUuid) {
+		final TeamBuilding teamBuilding = findWithTeamsAndUsers(roomUuid);
+
+		return TeamBuildingResponse.builder()
+			.teamBuildingInfo(makeTeamBuildingInfo(teamBuilding))
+			.teamInfoList(teamBuilding.getTeams().stream().map(TeamInfo::makeTeamInfo).toList())
+			.userInfoList(teamBuilding.getUsers().stream().map(UserInfo::makeUserInfo).toList())
+			.build();
+	}
+
+	private TeamBuilding findWithTeamsAndUsers(String uuid) {
+		return teamBuildingRepository.findWithTeamsAndUsers(uuid)
+			.orElseThrow(ExceptionInfo.INVALID_TEAM_BUILDING_UUID::exception);
+	}
+
+	public TeamBuilding findByUuid(String teamBuildingUuid) {
+		return teamBuildingRepository.findByUuid(teamBuildingUuid)
+			.orElseThrow(ExceptionInfo.INVALID_TEAM_BUILDING_UUID::exception);
 	}
 }

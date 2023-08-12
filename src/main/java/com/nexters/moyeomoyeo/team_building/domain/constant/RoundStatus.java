@@ -21,8 +21,4 @@ public enum RoundStatus {
 		this.weight = weight;
 		this.nextStatus = nextStatus;
 	}
-
-	public boolean isFinishRound(int order) {
-		return this.weight > order;
-	}
 }

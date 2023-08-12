@@ -13,13 +13,12 @@ public class TeamRepositoryImpl implements TeamRepository {
 	private final TeamJpa jpa;
 
 	@Override
-	public Optional<Team> findByTeamUuid(String teamUuid) {
-		return jpa.findByTeamUuid(teamUuid);
+	public Optional<Team> findByUuid(String uuid) {
+		return jpa.findByUuid(uuid);
 	}
 
 	@Override
-	public Team save(Team team) {
-		Team saved = jpa.save(team);
-		return saved;
+	public Optional<Team> findWithUsers(String uuid) {
+		return jpa.findWithUsers(uuid);
 	}
 }
