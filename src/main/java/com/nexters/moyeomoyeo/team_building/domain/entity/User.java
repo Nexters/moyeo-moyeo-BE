@@ -38,7 +38,7 @@ public class User extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "uuid", length = 30, unique = true)
+	@Column(length = 30, unique = true)
 	@Builder.Default
 	private String uuid = UuidGenerator.createUuid();
 
