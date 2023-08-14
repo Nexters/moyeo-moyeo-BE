@@ -2,6 +2,7 @@ package com.nexters.moyeomoyeo.team_building.service;
 
 
 import static com.nexters.moyeomoyeo.team_building.controller.dto.response.TeamBuildingResponse.TeamBuildingInfo.makeTeamBuildingInfo;
+import static com.nexters.moyeomoyeo.team_building.controller.dto.response.UserInfo.makeUserInfo;
 
 import com.nexters.moyeomoyeo.common.constant.ExceptionInfo;
 import com.nexters.moyeomoyeo.notification.service.NotificationService;
@@ -136,6 +137,27 @@ public class TeamBuildingService {
 		return UserPickResponse.builder()
 			.userInfoList(targetTeam.getUsers().stream().map(UserInfo::makeUserInfo).toList())
 			.build();
+	}
+
+	@Transactional
+	public UserInfo adjustUser(String teamBuildingUuid, String userUuid, String teamUuid) {
+		final TeamBuilding teamBuilding = findByUuid(teamBuildingUuid);
+
+		if (RoundStatus.ADJUSTED_ROUND != teamBuilding.getRoundStatus()) {
+			throw ExceptionInfo.INVALID_ADJUST_REQUEST.exception();
+		}
+
+		final User user = userService.findByUuid(userUuid);
+		final Team targetTeam = teamBuilding.getTeams()
+			.stream()
+			.filter(team -> Objects.equals(team.getUuid(), teamUuid))
+			.findFirst()
+			.orElse(null);
+		user.adjustTeam(targetTeam);
+		UserInfo userInfo = makeUserInfo(user);
+
+		notificationService.broadCast(teamBuildingUuid, "adjust-user", userInfo);
+		return userInfo;
 	}
 
 	@Transactional
