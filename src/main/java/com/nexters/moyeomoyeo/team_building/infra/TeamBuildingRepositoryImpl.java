@@ -17,10 +17,6 @@ public class TeamBuildingRepositoryImpl implements TeamBuildingRepository {
 		return jpa.save(teamBuilding);
 	}
 
-	@Override
-	public Optional<TeamBuilding> findWithTeamsAndUsers(String uuid) {
-		return jpa.findWithTeamsAndUsers(uuid);
-	}
 
 	@Override
 	public Optional<TeamBuilding> findByUuid(String uuid) {

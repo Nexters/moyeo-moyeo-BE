@@ -6,8 +6,6 @@ import java.util.Optional;
 public interface TeamBuildingRepository {
 
 	TeamBuilding save(TeamBuilding teamBuilding);
-
-	Optional<TeamBuilding> findWithTeamsAndUsers(String uuid);
-
+	
 	Optional<TeamBuilding> findByUuid(String uuid);
 }
