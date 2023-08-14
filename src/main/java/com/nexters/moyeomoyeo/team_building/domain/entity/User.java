@@ -58,14 +58,12 @@ public class User extends BaseEntity {
 	@JoinColumn(name = "team_id")
 	private Team team;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "team_building_id")
-	private TeamBuilding teamBuilding;
+	private String teamBuildingId;
 
-	protected User(String name, Position position, TeamBuilding teamBuilding) {
+	protected User(String name, Position position, String teamBuildingId) {
 		this.name = name;
 		this.position = position;
-		this.teamBuilding = teamBuilding;
+		this.teamBuildingId = teamBuildingId;
 		this.uuid = UuidGenerator.createUuid();
 	}
 
@@ -77,10 +75,6 @@ public class User extends BaseEntity {
 		this.team.getUsers().add(this);
 	}
 
-	public void addTeamBuilding(TeamBuilding teamBuilding) {
-		this.teamBuilding = teamBuilding;
-		this.teamBuilding.getUsers().add(this);
-	}
 
 	public UserChoice findChoice(int weight) {
 		return this.choices.get(weight - 1);
@@ -88,8 +82,7 @@ public class User extends BaseEntity {
 
 
 	/**
-	 * 선택한 팀이 없을 때 예외 처리
-	 * 기존 팀이 있다면 지우고 선택해주기
+	 * 선택한 팀이 없을 때 예외 처리 기존 팀이 있다면 지우고 선택해주기
 	 *
 	 * @param team
 	 */
@@ -97,7 +90,6 @@ public class User extends BaseEntity {
 		if (!Objects.isNull(this.team)) {
 			this.team.getUsers().remove(this);
 		}
-
 
 		this.team = team;
 

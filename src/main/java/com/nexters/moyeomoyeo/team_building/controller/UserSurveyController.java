@@ -31,7 +31,9 @@ public class UserSurveyController {
 	private final UserService userService;
 	private final TeamBuildingService teamBuildingService;
 
-	@Operation(summary = "회원 생성 요청", description = "회원이 생성됩니다.")
+	@Operation(summary = "회원 생성 요청", description = """
+		회원이 생성됩니다. \s
+		event : create-user, data : UserInfo.class""")
 	@ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = UserInfo.class)))
 	@ApiResponse(responseCode = "400", description = "BAD REQUEST", content = {
 		@Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))})

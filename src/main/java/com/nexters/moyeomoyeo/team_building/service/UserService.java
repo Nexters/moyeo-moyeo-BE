@@ -1,5 +1,7 @@
 package com.nexters.moyeomoyeo.team_building.service;
 
+import static com.nexters.moyeomoyeo.team_building.controller.dto.response.UserInfo.makeUserInfo;
+
 import com.nexters.moyeomoyeo.common.constant.ExceptionInfo;
 import com.nexters.moyeomoyeo.notification.service.NotificationService;
 import com.nexters.moyeomoyeo.team_building.controller.dto.request.UserRequest;
@@ -8,22 +10,29 @@ import com.nexters.moyeomoyeo.team_building.domain.entity.User;
 import com.nexters.moyeomoyeo.team_building.domain.entity.UserChoice;
 import com.nexters.moyeomoyeo.team_building.domain.repository.UserRepository;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.nexters.moyeomoyeo.team_building.controller.dto.response.UserInfo.makeUserInfo;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
-	private final TeamBuildingService teamBuildingService;
 	private final NotificationService notificationService;
-	private final TeamService teamService;
 	private final UserRepository userRepository;
+
+	private static User makeUser(UserRequest request) {
+		return User.builder()
+			.name(request.getName())
+			.position(request.getPosition())
+			.profileLink(request.getProfileLink())
+			.build();
+	}
+
+	private static boolean isValidUser(List<String> userUuids, List<User> pickedUsers) {
+		return pickedUsers.size() == userUuids.size();
+	}
 
 	@Transactional
 	public UserInfo createUser(String teamBuildingUuid, UserRequest request) {
@@ -34,35 +43,10 @@ public class UserService {
 			choice.addUser(user);
 		}
 
-		user.addTeamBuilding(teamBuildingService.findByUuid(teamBuildingUuid));
 		UserInfo userInfo = makeUserInfo(userRepository.save(user));
 		notificationService.broadCast(teamBuildingUuid, "create-user", userInfo);
 
 		return userInfo;
-	}
-
-	@Transactional
-	public UserInfo adjustUser(String teamBuildingUuid, String userUuid, String teamUuid) {
-		final User user = findUser(userUuid);
-
-		user.adjustTeam(teamService.findByUuid(teamUuid).orElse(null));
-		UserInfo userInfo = makeUserInfo(user);
-
-		notificationService.broadCast(teamBuildingUuid, "adjust-user", userInfo);
-		return userInfo;
-	}
-
-	private User findUser(String userUuid) {
-		return userRepository.findByUuid(userUuid).orElseThrow(ExceptionInfo.INVALID_USER_UUID::exception);
-	}
-
-	private static User makeUser(UserRequest request) {
-		final User user = User.builder()
-			.name(request.getName())
-			.position(request.getPosition())
-			.profileLink(request.getProfileLink())
-			.build();
-		return user;
 	}
 
 	private List<UserChoice> createUserChoices(List<String> teamUuids) {
@@ -82,11 +66,28 @@ public class UserService {
 
 	@Transactional
 	public void deleteUser(String teamBuildingUuid, String userUuid) {
-		final User targetUser = findUser(userUuid);
+		final User targetUser = findByUuid(userUuid);
 
 		userRepository.delete(targetUser);
 		notificationService.broadCast(teamBuildingUuid, "delete-user", userUuid);
 
 
+	}
+
+	public User findByUuid(String userUuid) {
+		return userRepository.findByUuid(userUuid).orElseThrow(ExceptionInfo.INVALID_USER_UUID::exception);
+	}
+
+	public List<User> findByUuidIn(List<String> uuids) {
+		final List<User> users = userRepository.findByUuidIn(uuids);
+		if (!isValidUser(uuids, users)) {
+			throw ExceptionInfo.INVALID_USER_UUID.exception();
+		}
+
+		return users;
+	}
+
+	public List<User> findByTeamBuildingId(Long teamBuildingId) {
+		return userRepository.findByTeamBuildingId(teamBuildingId);
 	}
 }

@@ -40,7 +40,11 @@ public class TeamBuildingController {
 	}
 
 
-	@Operation(summary = "팀 빌딩 팀원 선택 요청", description = "PM이 지망 별 팀원 선택을 할 때 사용합니다. ")
+	@Operation(summary = "팀 빌딩 팀원 선택 요청", description = """
+		PM이 지망 별 팀원 선택을 할 때 사용합니다. \s
+		event : pick-user, data : {"teamUuid" : "string", "teamName" : "string", "pickUserUuids" : ["string1", "string2"]} \s
+		event : change-round, data : RoundStatus(FIRST_ROUND, ADJUSTED_ROUND...)
+		""")
 	@ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = UserPickResponse.class)))
 	@ApiResponse(responseCode = "400", description = "BAD REQUEST", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class)))
 	@PostMapping("/{teamBuildingUuid}/teams/{teamUuid}/users")
