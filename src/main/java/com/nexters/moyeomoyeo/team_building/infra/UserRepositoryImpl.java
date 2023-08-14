@@ -2,10 +2,10 @@ package com.nexters.moyeomoyeo.team_building.infra;
 
 import com.nexters.moyeomoyeo.team_building.domain.entity.User;
 import com.nexters.moyeomoyeo.team_building.domain.repository.UserRepository;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-
-import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -26,5 +26,15 @@ public class UserRepositoryImpl implements UserRepository {
 	@Override
 	public Optional<User> findByUuid(String uuid) {
 		return jpa.findByUuid(uuid);
+	}
+
+	@Override
+	public List<User> findByUuidIn(List<String> uuids) {
+		return jpa.findByUuidIn(uuids);
+	}
+
+	@Override
+	public List<User> findByTeamBuildingId(Long teamBuildingId) {
+		return jpa.findByTeamBuildingId(teamBuildingId);
 	}
 }
