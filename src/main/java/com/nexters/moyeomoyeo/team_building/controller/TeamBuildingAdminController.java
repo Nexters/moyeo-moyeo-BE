@@ -42,7 +42,10 @@ public class TeamBuildingAdminController {
 		return ResponseEntity.ok(teamBuildingService.createTeamBuilding(teamBuildingRequest));
 	}
 
-	@Operation(summary = "조정 단계 팀원 수정 (단일 유저) ", description = "운영진이 조정단계에서 조정할 때 사용합니다. ")
+	@Operation(summary = "팀원 조정 (단일 유저) ", description = """
+		운영진이 조정 단계에서 팀원을 조정합니다. \s
+		event : adjust-user, data : UserInfo.class \s
+		""")
 	@PostMapping("/{teamBuildingUuid}/users/{userUuid}")
 	public ResponseEntity<UserInfo> adjustUser(@PathVariable(value = "teamBuildingUuid") String teamBuildingUuid,
 		@PathVariable(value = "userUuid") String userUuid, @RequestBody @Valid UserAdjustRequest userAdjustRequest) {
@@ -50,7 +53,10 @@ public class TeamBuildingAdminController {
 			teamBuildingService.adjustUser(teamBuildingUuid, userUuid, userAdjustRequest.getTeamUuid()));
 	}
 
-	@Operation(summary = "팀원 삭제 (단일 유저) ", description = "운영진이 팀원 조정할 때 사용합니다. ")
+	@Operation(summary = "팀원 삭제 (단일 유저) ", description = """
+		운영진이 팀원을 삭제합니다. \s
+		event : delete-user, data : userUuid
+		""")
 	@DeleteMapping("/{teamBuildingUuid}/users/{userUuid}")
 	public ResponseEntity<Void> deleteUser(@PathVariable(value = "teamBuildingUuid") String teamBuildingUuid,
 		@PathVariable(value = "userUuid") String userUuid) {
@@ -58,7 +64,10 @@ public class TeamBuildingAdminController {
 		return ResponseEntity.ok().build();
 	}
 
-	@Operation(summary = "팀 빌딩 마치기", description = "운영진이 조정 단계에서 팀빌딩을 마칩니다.")
+	@Operation(summary = "팀 빌딩 마치기", description = """
+		운영진이 조정 단계에서 팀빌딩을 마칩니다. \s
+		event : finish-team-building, data : RoundStatus(COMPLETE) \s
+		""")
 	@PutMapping("/{teamBuildingUuid}/finish")
 	public ResponseEntity<Void> finishTeamBuilding(@PathVariable(value = "teamBuildingUuid") String teamBuildingUuid) {
 		teamBuildingService.finishTeamBuilding(teamBuildingUuid);
