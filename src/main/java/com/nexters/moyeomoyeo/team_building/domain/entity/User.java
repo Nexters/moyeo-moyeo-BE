@@ -58,14 +58,7 @@ public class User extends BaseEntity {
 	@JoinColumn(name = "team_id")
 	private Team team;
 
-	private String teamBuildingId;
-
-	protected User(String name, Position position, String teamBuildingId) {
-		this.name = name;
-		this.position = position;
-		this.teamBuildingId = teamBuildingId;
-		this.uuid = UuidGenerator.createUuid();
-	}
+	private Long teamBuildingId;
 
 	public void addTeam(Team team) {
 		if (this.team != null) {
