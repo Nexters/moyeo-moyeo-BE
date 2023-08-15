@@ -34,14 +34,14 @@ public class SseEmitterHandler {
 		emitterList.add(emitter);
 		emitterMap.put(teamBuildingUuid, emitterList);
 
-		log.info("new emitter added: {}", emitter);
+		log.info("new emitter added: {}, {}", teamBuildingUuid, emitter);
 		log.info("emitter list size: {}", emitterList.size());
 		emitter.onCompletion(() -> {
-			log.info("onCompletion callback");
+			log.info("onCompletion callback : {}", emitter);
 			emitterList.remove(emitter);
 		});
 		emitter.onTimeout(() -> {
-			log.info("onTimeout callback");
+			log.info("onTimeout callback : {}", emitter);
 			emitterList.remove(emitter);
 		});
 	}

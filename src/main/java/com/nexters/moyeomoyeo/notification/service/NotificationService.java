@@ -1,7 +1,6 @@
 package com.nexters.moyeomoyeo.notification.service;
 
 import com.nexters.moyeomoyeo.notification.handler.SseEmitterHandler;
-import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -12,7 +11,8 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 @RequiredArgsConstructor
 public class NotificationService {
 
-	private static final Long DEFAULT_TIMEOUT = 60L * 1000 * 30;
+	//TODO 시간 원복
+	private static final Long DEFAULT_TIMEOUT = 60L * 1000 * 1;
 
 	private final SseEmitterHandler handler;
 
@@ -21,15 +21,15 @@ public class NotificationService {
 			emitter.send(SseEmitter.event()
 				.name(name)
 				.data(data));
-		} catch (IOException e) {
+		} catch (Exception e) {
 			log.error("fail to send message : {}", emitter);
 		}
 	}
 
 	public SseEmitter subscribe(String teamBuildingUuid) {
 		final SseEmitter emitter = new SseEmitter(DEFAULT_TIMEOUT);
-		sendNotification(emitter, "subscribe", "subscribe completed");
 		handler.add(teamBuildingUuid, emitter);
+		sendNotification(emitter, "subscribe", "subscribe completed");
 
 		return emitter;
 	}
