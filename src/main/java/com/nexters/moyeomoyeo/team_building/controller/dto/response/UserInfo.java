@@ -4,8 +4,10 @@ import com.nexters.moyeomoyeo.team_building.domain.constant.Position;
 import com.nexters.moyeomoyeo.team_building.domain.entity.User;
 import com.nexters.moyeomoyeo.team_building.domain.entity.UserChoice;
 import io.swagger.v3.oas.annotations.media.Schema;
+
 import java.util.List;
 import java.util.Objects;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,6 +31,7 @@ public class UserInfo {
 	private List<String> choices;
 	@Schema(description = "최종 빌딩 된 팀")
 	private String joinedTeamUuid;
+	@Schema(description = "팀원 추가 링크")
 	private String profileLink;
 	@Builder.Default
 	@Schema(description = "현재 팀 빌딩이 완료된 상태인지 여부")
@@ -47,6 +50,7 @@ public class UserInfo {
 			.position(user.getPosition())
 			.choices(choices)
 			.joinedTeamUuid(joinedTeamUuid)
+			.profileLink(user.getProfileLink())
 			.isSelectedTeam(isSelectedTeam(choices, joinedTeamUuid))
 			.build();
 	}
