@@ -5,7 +5,7 @@ import com.nexters.moyeomoyeo.team_building.controller.dto.request.TeamBuildingR
 import com.nexters.moyeomoyeo.team_building.controller.dto.request.UserAdjustRequest;
 import com.nexters.moyeomoyeo.team_building.controller.dto.response.TeamBuildingResponse;
 import com.nexters.moyeomoyeo.team_building.controller.dto.response.UserInfo;
-import com.nexters.moyeomoyeo.team_building.service.TeamBuildingService;
+import com.nexters.moyeomoyeo.team_building.service.TeamBuildingAdminService;
 import com.nexters.moyeomoyeo.team_building.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "어드민", description = "어드민 관련 팀빌딩 api 입니다.")
 public class TeamBuildingAdminController {
 
-	private final TeamBuildingService teamBuildingService;
+	private final TeamBuildingAdminService adminService;
 	private final UserService userService;
 
 	@Operation(summary = "팀 빌딩 생성 요청", description = "팀빌딩 방과 팀 리스트를 생성됩니다. ")
@@ -39,7 +39,7 @@ public class TeamBuildingAdminController {
 	@PostMapping
 	public ResponseEntity<TeamBuildingResponse> createTeamBuilding(
 		@RequestBody @Valid TeamBuildingRequest teamBuildingRequest) {
-		return ResponseEntity.ok(teamBuildingService.createTeamBuilding(teamBuildingRequest));
+		return ResponseEntity.ok(adminService.createTeamBuilding(teamBuildingRequest));
 	}
 
 	@Operation(summary = "팀원 조정 (단일 유저) ", description = """
@@ -49,8 +49,7 @@ public class TeamBuildingAdminController {
 	@PostMapping("/{teamBuildingUuid}/users/{userUuid}")
 	public ResponseEntity<UserInfo> adjustUser(@PathVariable(value = "teamBuildingUuid") String teamBuildingUuid,
 		@PathVariable(value = "userUuid") String userUuid, @RequestBody @Valid UserAdjustRequest userAdjustRequest) {
-		return ResponseEntity.ok(
-			teamBuildingService.adjustUser(teamBuildingUuid, userUuid, userAdjustRequest.getTeamUuid()));
+		return ResponseEntity.ok(adminService.adjustUser(teamBuildingUuid, userUuid, userAdjustRequest.getTeamUuid()));
 	}
 
 	@Operation(summary = "팀원 삭제 (단일 유저) ", description = """
@@ -70,7 +69,7 @@ public class TeamBuildingAdminController {
 		""")
 	@PutMapping("/{teamBuildingUuid}/finish")
 	public ResponseEntity<Void> finishTeamBuilding(@PathVariable(value = "teamBuildingUuid") String teamBuildingUuid) {
-		teamBuildingService.finishTeamBuilding(teamBuildingUuid);
+		adminService.finishTeamBuilding(teamBuildingUuid);
 		return ResponseEntity.ok().build();
 	}
 }

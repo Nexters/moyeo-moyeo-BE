@@ -13,5 +13,5 @@ public interface UserJpa extends JpaRepository<User, Long> {
 
 	List<User> findByUuidIn(List<String> uuids);
 
-	List<User> findByTeamBuildingId(Long teamBuildingId);
+	List<User> findByTeamBuildingUuid(String teamBuildingUuid);
 }
