@@ -4,7 +4,7 @@ import com.nexters.moyeomoyeo.common.exception.dto.ExceptionResponse;
 import com.nexters.moyeomoyeo.team_building.controller.dto.request.UserPickRequest;
 import com.nexters.moyeomoyeo.team_building.controller.dto.response.TeamBuildingResponse;
 import com.nexters.moyeomoyeo.team_building.controller.dto.response.UserPickResponse;
-import com.nexters.moyeomoyeo.team_building.service.TeamBuildingService;
+import com.nexters.moyeomoyeo.team_building.service.TeamBuildingCoreService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -26,8 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class TeamBuildingController {
 
-	private final TeamBuildingService teamBuildingService;
-
+	private final TeamBuildingCoreService coreService;
 
 	@Operation(summary = "팀 빌딩 현황 조회", description = "팀빌딩 현황 데이터가 조회됩니다. ")
 	@ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = TeamBuildingResponse.class)))
@@ -36,7 +35,7 @@ public class TeamBuildingController {
 	@GetMapping("/{teamBuildingUuid}")
 	public ResponseEntity<TeamBuildingResponse> findTeamBuilding(
 		@PathVariable(value = "teamBuildingUuid") String teamBuildingUuid) {
-		return ResponseEntity.ok(teamBuildingService.findTeamBuilding(teamBuildingUuid));
+		return ResponseEntity.ok(coreService.findTeamBuilding(teamBuildingUuid));
 	}
 
 
@@ -52,7 +51,7 @@ public class TeamBuildingController {
 		@PathVariable(value = "teamBuildingUuid") String teamBuildingUuid,
 		@PathVariable(value = "teamUuid") String teamUuid,
 		@RequestBody @Valid UserPickRequest userPickRequest) {
-		return ResponseEntity.ok(teamBuildingService.pickUsers(teamBuildingUuid, teamUuid, userPickRequest));
+		return ResponseEntity.ok(coreService.pickUsers(teamBuildingUuid, teamUuid, userPickRequest));
 	}
 
 }

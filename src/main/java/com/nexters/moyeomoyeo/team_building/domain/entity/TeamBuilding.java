@@ -49,12 +49,13 @@ public class TeamBuilding extends BaseEntity {
 	@Builder.Default
 	private List<Team> teams = new ArrayList<>();
 
-	public void nextRound() {
+	public RoundStatus nextRound() {
 		if (this.roundStatus == RoundStatus.COMPLETE) {
 			throw ExceptionInfo.COMPLETED_TEAM_BUILDING.exception();
 		}
 
 		this.roundStatus = this.roundStatus.getNextStatus();
+		return this.roundStatus;
 	}
 }
 

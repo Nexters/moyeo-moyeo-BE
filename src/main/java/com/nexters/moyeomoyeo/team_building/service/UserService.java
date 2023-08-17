@@ -22,11 +22,12 @@ public class UserService {
 	private final NotificationService notificationService;
 	private final UserRepository userRepository;
 
-	private static User makeUser(UserRequest request) {
+	public static User makeUser(String teamBuildingUuid, UserRequest request) {
 		return User.builder()
 			.name(request.getName())
 			.position(request.getPosition())
 			.profileLink(request.getProfileLink())
+			.teamBuildingUuid(teamBuildingUuid)
 			.build();
 	}
 
@@ -36,7 +37,7 @@ public class UserService {
 
 	@Transactional
 	public UserInfo createUser(String teamBuildingUuid, UserRequest request) {
-		final User user = makeUser(request);
+		final User user = makeUser(teamBuildingUuid, request);
 
 		final List<UserChoice> choices = createUserChoices(request.getChoices());
 		for (final UserChoice choice : choices) {
@@ -49,7 +50,7 @@ public class UserService {
 		return userInfo;
 	}
 
-	private List<UserChoice> createUserChoices(List<String> teamUuids) {
+	public List<UserChoice> createUserChoices(List<String> teamUuids) {
 		final List<UserChoice> choices = new ArrayList<>();
 		int choiceOrder = 1;
 
@@ -71,7 +72,6 @@ public class UserService {
 		userRepository.delete(targetUser);
 		notificationService.broadCast(teamBuildingUuid, "delete-user", userUuid);
 
-
 	}
 
 	public User findByUuid(String userUuid) {
@@ -87,7 +87,7 @@ public class UserService {
 		return users;
 	}
 
-	public List<User> findByTeamBuildingId(Long teamBuildingId) {
-		return userRepository.findByTeamBuildingId(teamBuildingId);
+	public List<User> findByTeamBuildingId(String teamBuildingUuid) {
+		return userRepository.findByTeamBuildingUuid(teamBuildingUuid);
 	}
 }
