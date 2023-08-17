@@ -48,7 +48,7 @@ public class TeamBuildingAdminController {
 		""")
 	@PostMapping("/{teamBuildingUuid}/users/{userUuid}")
 	public ResponseEntity<UserInfo> adjustUser(@PathVariable(value = "teamBuildingUuid") String teamBuildingUuid,
-		@PathVariable(value = "userUuid") String userUuid, @RequestBody @Valid UserAdjustRequest userAdjustRequest) {
+											   @PathVariable(value = "userUuid") String userUuid, @RequestBody @Valid UserAdjustRequest userAdjustRequest) {
 		return ResponseEntity.ok(adminService.adjustUser(teamBuildingUuid, userUuid, userAdjustRequest.getTeamUuid()));
 	}
 
@@ -58,8 +58,8 @@ public class TeamBuildingAdminController {
 		""")
 	@DeleteMapping("/{teamBuildingUuid}/users/{userUuid}")
 	public ResponseEntity<Void> deleteUser(@PathVariable(value = "teamBuildingUuid") String teamBuildingUuid,
-		@PathVariable(value = "userUuid") String userUuid) {
-		userService.deleteUser(teamBuildingUuid, userUuid);
+										   @PathVariable(value = "userUuid") String userUuid) {
+		adminService.deleteTeamBuildingUser(teamBuildingUuid, userUuid);
 		return ResponseEntity.ok().build();
 	}
 
