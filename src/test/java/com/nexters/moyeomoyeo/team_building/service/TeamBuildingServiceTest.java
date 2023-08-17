@@ -18,6 +18,9 @@ class TeamBuildingServiceTest {
 	@Autowired
 	private TeamBuildingService teamBuildingService;
 
+	@Autowired
+	private TeamBuildingAdminService adminService;
+
 
 	@Test
 	void createTeamBuilding() {
@@ -38,7 +41,7 @@ class TeamBuildingServiceTest {
 	}
 
 	private TeamBuildingResponse saveTeamBuildingWithTeams() {
-		return teamBuildingService.createTeamBuilding(TeamBuildingRequest.builder()
+		return adminService.createTeamBuilding(TeamBuildingRequest.builder()
 			.name("team-Building")
 			.teams(List.of(
 				TeamRequest.builder()

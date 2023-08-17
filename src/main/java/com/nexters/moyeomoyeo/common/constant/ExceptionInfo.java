@@ -16,7 +16,7 @@ public enum ExceptionInfo {
 	COMPLETED_TEAM_BUILDING("이미 종료된 팀빌딩입니다.", HttpStatus.BAD_REQUEST),
 	INVALID_ADJUST_REQUEST("조정 라운드에서만 조정 가능합니다.", HttpStatus.BAD_REQUEST),
 	INVALID_FINISH_REQUEST("조정 라운드에서만 팀빌딩을 종료할 수 있습니다.", HttpStatus.BAD_REQUEST),
-	;
+	DUPLICATED_PICK_REQUEST("이미 선택이 완료된 팀입니다.", HttpStatus.BAD_REQUEST);
 	@Getter
 	private final String message;
 	private final HttpStatus status;
