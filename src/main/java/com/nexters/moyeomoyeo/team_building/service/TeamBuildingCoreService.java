@@ -70,7 +70,7 @@ public class TeamBuildingCoreService {
 	public TeamBuildingResponse findTeamBuilding(String teamBuildingUuid) {
 		final TeamBuilding teamBuilding = teamBuildingService.findByUuid(teamBuildingUuid);
 
-		final List<User> users = userService.findByTeamBuildingId(teamBuilding.getId());
+		final List<User> users = userService.findByTeamBuildingId(teamBuildingUuid);
 
 		return TeamBuildingResponse.builder()
 			.teamBuildingInfo(makeTeamBuildingInfo(teamBuilding))

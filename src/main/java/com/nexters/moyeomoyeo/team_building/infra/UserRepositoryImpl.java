@@ -34,7 +34,7 @@ public class UserRepositoryImpl implements UserRepository {
 	}
 
 	@Override
-	public List<User> findByTeamBuildingId(Long teamBuildingId) {
-		return jpa.findByTeamBuildingId(teamBuildingId);
+	public List<User> findByTeamBuildingUuid(String teamBuildingUuid) {
+		return jpa.findByTeamBuildingUuid(teamBuildingUuid);
 	}
 }

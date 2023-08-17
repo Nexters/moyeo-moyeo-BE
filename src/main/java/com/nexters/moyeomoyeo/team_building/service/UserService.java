@@ -6,7 +6,6 @@ import com.nexters.moyeomoyeo.common.constant.ExceptionInfo;
 import com.nexters.moyeomoyeo.notification.service.NotificationService;
 import com.nexters.moyeomoyeo.team_building.controller.dto.request.UserRequest;
 import com.nexters.moyeomoyeo.team_building.controller.dto.response.UserInfo;
-import com.nexters.moyeomoyeo.team_building.domain.entity.TeamBuilding;
 import com.nexters.moyeomoyeo.team_building.domain.entity.User;
 import com.nexters.moyeomoyeo.team_building.domain.entity.UserChoice;
 import com.nexters.moyeomoyeo.team_building.domain.repository.UserRepository;
@@ -20,16 +19,15 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UserService {
 
-	private final TeamBuildingService teamBuildingService;
 	private final NotificationService notificationService;
 	private final UserRepository userRepository;
 
-	public static User makeUser(Long teamBuildingId, UserRequest request) {
+	public static User makeUser(String teamBuildingUuid, UserRequest request) {
 		return User.builder()
 			.name(request.getName())
 			.position(request.getPosition())
 			.profileLink(request.getProfileLink())
-			.teamBuildingId(teamBuildingId)
+			.teamBuildingUuid(teamBuildingUuid)
 			.build();
 	}
 
@@ -39,8 +37,7 @@ public class UserService {
 
 	@Transactional
 	public UserInfo createUser(String teamBuildingUuid, UserRequest request) {
-		final TeamBuilding teamBuilding = teamBuildingService.findByUuid(teamBuildingUuid);
-		final User user = makeUser(teamBuilding.getId(), request);
+		final User user = makeUser(teamBuildingUuid, request);
 
 		final List<UserChoice> choices = createUserChoices(request.getChoices());
 		for (final UserChoice choice : choices) {
@@ -90,7 +87,7 @@ public class UserService {
 		return users;
 	}
 
-	public List<User> findByTeamBuildingId(Long teamBuildingId) {
-		return userRepository.findByTeamBuildingId(teamBuildingId);
+	public List<User> findByTeamBuildingId(String teamBuildingUuid) {
+		return userRepository.findByTeamBuildingUuid(teamBuildingUuid);
 	}
 }
