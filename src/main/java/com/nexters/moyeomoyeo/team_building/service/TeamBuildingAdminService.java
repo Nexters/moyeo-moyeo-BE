@@ -15,8 +15,10 @@ import com.nexters.moyeomoyeo.team_building.domain.constant.RoundStatus;
 import com.nexters.moyeomoyeo.team_building.domain.entity.Team;
 import com.nexters.moyeomoyeo.team_building.domain.entity.TeamBuilding;
 import com.nexters.moyeomoyeo.team_building.domain.entity.User;
+
 import java.util.List;
 import java.util.Objects;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,6 +52,16 @@ public class TeamBuildingAdminService {
 		return userInfo;
 	}
 
+
+	@Transactional
+	public void deleteTeamBuildingUser(String uuid, String userUuid) {
+		final TeamBuilding teamBuilding = teamBuildingService.findByUuid(uuid);
+
+		if (RoundStatus.FIRST_ROUND != teamBuilding.getRoundStatus()) {
+			throw ExceptionInfo.INVALID_DELETE_REQUEST.exception();
+		}
+		userService.deleteUser(uuid, userUuid);
+	}
 
 	@Transactional
 	public void finishTeamBuilding(String uuid) {
