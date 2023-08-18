@@ -11,8 +11,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 @RequiredArgsConstructor
 public class NotificationService {
 
-	//TODO 시간 원복
-	private static final Long DEFAULT_TIMEOUT = 60L * 1000 * 1;
+	private static final Long DEFAULT_TIMEOUT = 60L * 1000 * 30;
 
 	private final SseEmitterHandler handler;
 
