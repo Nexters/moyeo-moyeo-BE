@@ -107,6 +107,7 @@ public class TeamBuildingCoreService {
 
 		for (final User user : pickedUsers) {
 			user.addTeam(targetTeam);
+			user.updateSelectedRound(teamBuildingRoundStatus);
 		}
 		targetTeam.nextRound();
 
