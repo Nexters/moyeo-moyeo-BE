@@ -1,19 +1,17 @@
 package com.nexters.moyeomoyeo.team_building.controller.dto.response;
 
 import com.nexters.moyeomoyeo.team_building.domain.constant.Position;
+import com.nexters.moyeomoyeo.team_building.domain.constant.RoundStatus;
 import com.nexters.moyeomoyeo.team_building.domain.entity.User;
 import com.nexters.moyeomoyeo.team_building.domain.entity.UserChoice;
 import io.swagger.v3.oas.annotations.media.Schema;
-
 import java.util.List;
 import java.util.Objects;
-
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.util.CollectionUtils;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -33,9 +31,9 @@ public class UserInfo {
 	private String joinedTeamUuid;
 	@Schema(description = "팀원 추가 링크")
 	private String profileLink;
-	@Builder.Default
-	@Schema(description = "현재 팀 빌딩이 완료된 상태인지 여부")
-	private boolean isSelectedTeam = false;
+	@Schema(description = "선택받은 라운드")
+	private RoundStatus selectedRound;
+
 
 	public static UserInfo makeUserInfo(User user) {
 		final List<String> choices = user.getChoices().stream()
@@ -51,15 +49,7 @@ public class UserInfo {
 			.choices(choices)
 			.joinedTeamUuid(joinedTeamUuid)
 			.profileLink(user.getProfileLink())
-			.isSelectedTeam(isSelectedTeam(choices, joinedTeamUuid))
+			.selectedRound(user.getSelectedRound())
 			.build();
-	}
-
-	private static boolean isSelectedTeam(List<String> choices, String joinedTeamUuid) {
-		if (CollectionUtils.isEmpty(choices)) {
-			return false;
-		}
-
-		return choices.contains(joinedTeamUuid);
 	}
 }

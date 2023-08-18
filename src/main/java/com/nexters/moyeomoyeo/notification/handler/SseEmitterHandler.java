@@ -1,10 +1,10 @@
 package com.nexters.moyeomoyeo.notification.handler;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -15,7 +15,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 public class SseEmitterHandler {
 
 	// key : teamBuildingUuid
-	private final Map<String, List<SseEmitter>> emitterMap = new HashMap<>();
+	private final Map<String, List<SseEmitter>> emitterMap = new ConcurrentHashMap<>();
 
 	public List<SseEmitter> getEmitters(String teamBuildingUuid) {
 		final List<SseEmitter> emitterList = emitterMap.get(teamBuildingUuid);
