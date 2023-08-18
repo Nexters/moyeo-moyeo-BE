@@ -15,10 +15,8 @@ import com.nexters.moyeomoyeo.team_building.domain.constant.RoundStatus;
 import com.nexters.moyeomoyeo.team_building.domain.entity.Team;
 import com.nexters.moyeomoyeo.team_building.domain.entity.TeamBuilding;
 import com.nexters.moyeomoyeo.team_building.domain.entity.User;
-
 import java.util.List;
 import java.util.Objects;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,9 +43,11 @@ public class TeamBuildingAdminService {
 			.filter(team -> Objects.equals(team.getUuid(), teamUuid))
 			.findFirst()
 			.orElse(null);
-		user.adjustTeam(targetTeam);
-		UserInfo userInfo = makeUserInfo(user);
 
+		user.adjustTeam(targetTeam);
+		user.updateSelectedRound(Objects.isNull(targetTeam) ? null : RoundStatus.ADJUSTED_ROUND);
+
+		UserInfo userInfo = makeUserInfo(user);
 		notificationService.broadCast(teamBuildingUuid, "adjust-user", userInfo);
 		return userInfo;
 	}
