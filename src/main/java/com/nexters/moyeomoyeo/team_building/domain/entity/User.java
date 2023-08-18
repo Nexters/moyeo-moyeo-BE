@@ -4,6 +4,7 @@ import com.nexters.moyeomoyeo.common.constant.ExceptionInfo;
 import com.nexters.moyeomoyeo.common.entity.BaseEntity;
 import com.nexters.moyeomoyeo.common.util.UuidGenerator;
 import com.nexters.moyeomoyeo.team_building.domain.constant.Position;
+import com.nexters.moyeomoyeo.team_building.domain.constant.RoundStatus;
 import io.micrometer.common.lang.Nullable;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -60,6 +61,9 @@ public class User extends BaseEntity {
 
 	private String teamBuildingUuid;
 
+	@Enumerated(EnumType.STRING)
+	private RoundStatus selectedRound;
+
 	public void addTeam(Team team) {
 		if (this.team != null) {
 			throw ExceptionInfo.ALREADY_JOINED_USER.exception();
@@ -89,6 +93,10 @@ public class User extends BaseEntity {
 		if (!Objects.isNull(team)) {
 			team.getUsers().add(this);
 		}
+	}
+
+	public void updateSelectedRound(RoundStatus round) {
+		this.selectedRound = round;
 	}
 }
 
