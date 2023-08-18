@@ -51,7 +51,9 @@ public class TeamBuildingController {
 		@PathVariable(value = "teamBuildingUuid") String teamBuildingUuid,
 		@PathVariable(value = "teamUuid") String teamUuid,
 		@RequestBody @Valid UserPickRequest userPickRequest) {
-		return ResponseEntity.ok(coreService.pickUsers(teamBuildingUuid, teamUuid, userPickRequest));
+		return ResponseEntity.ok()
+			.header("X-Accel-Buffering", "no")
+			.body(coreService.pickUsers(teamBuildingUuid, teamUuid, userPickRequest));
 	}
 
 }

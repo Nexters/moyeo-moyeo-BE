@@ -19,6 +19,8 @@ public class NotificationController {
 
 	@GetMapping(value = "/team-building/{teamBuildingUuid}/subscribe", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
 	public ResponseEntity<SseEmitter> subscribe(@PathVariable("teamBuildingUuid") String teamBuildingUuid) {
-		return ResponseEntity.ok(notificationService.subscribe(teamBuildingUuid));
+		return ResponseEntity.ok()
+			.header("X-Accel-Buffering", "no")
+			.body(notificationService.subscribe(teamBuildingUuid));
 	}
 }
