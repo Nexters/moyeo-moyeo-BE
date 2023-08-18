@@ -15,10 +15,10 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 public class SseEmitterHandler {
 
 	// key : teamBuildingUuid
-	private final Map<String, List<SseEmitter>> emitterMap = new ConcurrentHashMap<>();
+	private static final Map<String, List<SseEmitter>> EMITTER_MAP = new ConcurrentHashMap<>();
 
 	public List<SseEmitter> getEmitters(String teamBuildingUuid) {
-		final List<SseEmitter> emitterList = emitterMap.get(teamBuildingUuid);
+		final List<SseEmitter> emitterList = EMITTER_MAP.get(teamBuildingUuid);
 
 		if (Objects.isNull(emitterList)) {
 			return Collections.emptyList();
@@ -28,11 +28,11 @@ public class SseEmitterHandler {
 	}
 
 	public void add(String teamBuildingUuid, SseEmitter emitter) {
-		final List<SseEmitter> emitterList = Objects.isNull(this.emitterMap.get(teamBuildingUuid)) ?
-			new CopyOnWriteArrayList<>() : this.emitterMap.get(teamBuildingUuid);
+		final List<SseEmitter> emitterList = Objects.isNull(EMITTER_MAP.get(teamBuildingUuid)) ?
+			new CopyOnWriteArrayList<>() : EMITTER_MAP.get(teamBuildingUuid);
 
 		emitterList.add(emitter);
-		emitterMap.put(teamBuildingUuid, emitterList);
+		EMITTER_MAP.put(teamBuildingUuid, emitterList);
 
 		log.info("new emitter added: {}, {}", teamBuildingUuid, emitter);
 		log.info("emitter list size: {}", emitterList.size());
