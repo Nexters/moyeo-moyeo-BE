@@ -40,7 +40,9 @@ public class UserSurveyController {
 	@PostMapping("/{teamBuildingUuid}/users")
 	public ResponseEntity<UserInfo> createUser(@PathVariable(value = "teamBuildingUuid") String teamBuildingUuid,
 		@RequestBody @Valid UserRequest userRequest) {
-		return ResponseEntity.ok(userService.createUser(teamBuildingUuid, userRequest));
+		return ResponseEntity.ok()
+			.header("X-Accel-Buffering", "no")
+			.body(userService.createUser(teamBuildingUuid, userRequest));
 	}
 
 	@Operation(summary = "팀 빌딩 팀 데이터 조회", description = "팀 빌딩, 팀 정보가 조회됩니다. (유저 선택 정보 제외) ")

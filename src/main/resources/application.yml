@@ -12,7 +12,7 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.MySQLDialect
-        default_batch_fetch_size: 10
+        default_batch_fetch_size: 100
     open-in-view: false
 
     mvc:

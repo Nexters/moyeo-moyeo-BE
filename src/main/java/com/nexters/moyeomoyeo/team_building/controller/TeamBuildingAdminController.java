@@ -48,8 +48,10 @@ public class TeamBuildingAdminController {
 		""")
 	@PostMapping("/{teamBuildingUuid}/users/{userUuid}")
 	public ResponseEntity<UserInfo> adjustUser(@PathVariable(value = "teamBuildingUuid") String teamBuildingUuid,
-											   @PathVariable(value = "userUuid") String userUuid, @RequestBody @Valid UserAdjustRequest userAdjustRequest) {
-		return ResponseEntity.ok(adminService.adjustUser(teamBuildingUuid, userUuid, userAdjustRequest.getTeamUuid()));
+		@PathVariable(value = "userUuid") String userUuid, @RequestBody @Valid UserAdjustRequest userAdjustRequest) {
+		return ResponseEntity.ok()
+			.header("X-Accel-Buffering", "no")
+			.body(adminService.adjustUser(teamBuildingUuid, userUuid, userAdjustRequest.getTeamUuid()));
 	}
 
 	@Operation(summary = "팀원 삭제 (단일 유저) ", description = """
@@ -58,9 +60,11 @@ public class TeamBuildingAdminController {
 		""")
 	@DeleteMapping("/{teamBuildingUuid}/users/{userUuid}")
 	public ResponseEntity<Void> deleteUser(@PathVariable(value = "teamBuildingUuid") String teamBuildingUuid,
-										   @PathVariable(value = "userUuid") String userUuid) {
+		@PathVariable(value = "userUuid") String userUuid) {
 		adminService.deleteTeamBuildingUser(teamBuildingUuid, userUuid);
-		return ResponseEntity.ok().build();
+		return ResponseEntity.ok()
+			.header("X-Accel-Buffering", "no")
+			.build();
 	}
 
 	@Operation(summary = "팀 빌딩 마치기", description = """
@@ -70,6 +74,8 @@ public class TeamBuildingAdminController {
 	@PutMapping("/{teamBuildingUuid}/finish")
 	public ResponseEntity<Void> finishTeamBuilding(@PathVariable(value = "teamBuildingUuid") String teamBuildingUuid) {
 		adminService.finishTeamBuilding(teamBuildingUuid);
-		return ResponseEntity.ok().build();
+		return ResponseEntity.ok()
+			.header("X-Accel-Buffering", "no")
+			.build();
 	}
 }
