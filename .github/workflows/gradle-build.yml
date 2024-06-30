@@ -31,14 +31,3 @@ jobs:
 
       - name: Gradle Build Action
         run: SPRING_PROFILES_ACTIVE=[test] ./gradlew test
-
-      - name: action-slack
-        uses: 8398a7/action-slack@v3
-        with:
-          status: ${{ job.status }}
-          author_name: Moyeo Moyeo
-          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} # required
-        if: always() # Pick up events even if the job fails or is canceled.
-    
