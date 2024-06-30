@@ -1,6 +1,12 @@
 name: CD with naver cloud platform
 
 on:
+  workflow_dispatch:
+      inputs:
+         tags:
+            description: 'Deploy Tags'
+            required: false
+            type: boolean
   push:
     branches: [ "main" ]
 
