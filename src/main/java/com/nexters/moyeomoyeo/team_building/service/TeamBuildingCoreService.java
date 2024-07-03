@@ -15,7 +15,6 @@ import com.nexters.moyeomoyeo.team_building.domain.constant.RoundStatus;
 import com.nexters.moyeomoyeo.team_building.domain.entity.Team;
 import com.nexters.moyeomoyeo.team_building.domain.entity.TeamBuilding;
 import com.nexters.moyeomoyeo.team_building.domain.entity.User;
-import com.nexters.moyeomoyeo.team_building.domain.entity.UserChoice;
 import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
@@ -40,8 +39,8 @@ public class TeamBuildingCoreService {
 	private static boolean isChosenTeam(Team team, List<User> pickedUsers) {
 		final RoundStatus roundStatus = team.getRoundStatus();
 		for (final User user : pickedUsers) {
-			final UserChoice choice = user.findChoice(roundStatus.getWeight());
-			if (!Objects.equals(choice.getTeamUuid(), team.getUuid())) {
+			final String teamUuid = user.findChoice(roundStatus.getOrder());
+			if (!Objects.equals(teamUuid, team.getUuid())) {
 				return false;
 			}
 		}

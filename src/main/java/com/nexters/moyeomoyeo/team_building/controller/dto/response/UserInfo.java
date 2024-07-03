@@ -3,7 +3,6 @@ package com.nexters.moyeomoyeo.team_building.controller.dto.response;
 import com.nexters.moyeomoyeo.team_building.domain.constant.Position;
 import com.nexters.moyeomoyeo.team_building.domain.constant.RoundStatus;
 import com.nexters.moyeomoyeo.team_building.domain.entity.User;
-import com.nexters.moyeomoyeo.team_building.domain.entity.UserChoice;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import java.util.Objects;
@@ -36,17 +35,13 @@ public class UserInfo {
 
 
 	public static UserInfo makeUserInfo(User user) {
-		final List<String> choices = user.getChoices().stream()
-			.map(UserChoice::getTeamUuid)
-			.toList();
-
 		final String joinedTeamUuid = Objects.isNull(user.getTeam()) ? null : user.getTeam().getUuid();
 
 		return UserInfo.builder()
 			.uuid(user.getUuid())
 			.userName(user.getName())
 			.position(user.getPosition())
-			.choices(choices)
+			.choices(user.getChoices())
 			.joinedTeamUuid(joinedTeamUuid)
 			.profileLink(user.getProfileLink())
 			.selectedRound(user.getSelectedRound())

@@ -9,16 +9,17 @@ public enum RoundStatus {
 	THIRD_ROUND(3, FORTH_ROUND),
 	SECOND_ROUND(2, THIRD_ROUND),
 	FIRST_ROUND(1, SECOND_ROUND),
+	START(0, FIRST_ROUND)
 	;
 
 	@Getter
-	final private int weight;
+	private final int order;
 
 	@Getter
-	final private RoundStatus nextStatus;
+	private final RoundStatus nextStatus;
 
-	RoundStatus(int weight, RoundStatus nextStatus) {
-		this.weight = weight;
+	RoundStatus(int order, RoundStatus nextStatus) {
+		this.order = order;
 		this.nextStatus = nextStatus;
 	}
 }

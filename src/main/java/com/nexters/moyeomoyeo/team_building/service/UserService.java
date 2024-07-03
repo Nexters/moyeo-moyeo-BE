@@ -7,7 +7,6 @@ import com.nexters.moyeomoyeo.notification.service.NotificationService;
 import com.nexters.moyeomoyeo.team_building.controller.dto.request.UserRequest;
 import com.nexters.moyeomoyeo.team_building.controller.dto.response.UserInfo;
 import com.nexters.moyeomoyeo.team_building.domain.entity.User;
-import com.nexters.moyeomoyeo.team_building.domain.entity.UserChoice;
 import com.nexters.moyeomoyeo.team_building.domain.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import java.util.ArrayList;
@@ -27,6 +26,7 @@ public class UserService {
 			.name(request.getName())
 			.position(request.getPosition())
 			.profileLink(request.getProfileLink())
+			.choices(request.getChoices())
 			.teamBuildingUuid(teamBuildingUuid)
 			.build();
 	}
@@ -39,30 +39,10 @@ public class UserService {
 	public UserInfo createUser(String teamBuildingUuid, UserRequest request) {
 		final User user = makeUser(teamBuildingUuid, request);
 
-		final List<UserChoice> choices = createUserChoices(request.getChoices());
-		for (final UserChoice choice : choices) {
-			choice.addUser(user);
-		}
-
 		UserInfo userInfo = makeUserInfo(userRepository.save(user));
 		notificationService.broadCast(teamBuildingUuid, "create-user", userInfo);
 
 		return userInfo;
-	}
-
-	public List<UserChoice> createUserChoices(List<String> teamUuids) {
-		final List<UserChoice> choices = new ArrayList<>();
-		int choiceOrder = 1;
-
-		for (final String teamUuid : teamUuids) {
-			final UserChoice userChoice = UserChoice.builder()
-				.choiceOrder(choiceOrder++)
-				.teamUuid(teamUuid)
-				.build();
-
-			choices.add(userChoice);
-		}
-		return choices;
 	}
 
 	@Transactional
