@@ -57,16 +57,6 @@ public class Team extends BaseEntity {
 	@Builder.Default
 	private List<User> users = new ArrayList<>();
 
-	protected Team(String name, String pmName, Position pmPosition, RoundStatus roundStatus,
-		TeamBuilding teamBuilding) {
-		this.name = name;
-		this.pmName = pmName;
-		this.pmPosition = pmPosition;
-		this.uuid = UuidGenerator.createUuid();
-		this.roundStatus = roundStatus;
-		this.teamBuilding = teamBuilding;
-	}
-
 	public void nextRound() {
 		if (this.roundStatus == RoundStatus.COMPLETE) {
 			throw ExceptionInfo.COMPLETED_TEAM_BUILDING.exception();

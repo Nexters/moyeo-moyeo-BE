@@ -33,7 +33,7 @@ public class NotificationService {
 		return emitter;
 	}
 
-	public void broadCast(String teamBuildingUuid, String name, Object data) {
+	public void broadcast(String teamBuildingUuid, String name, Object data) {
 		for (final SseEmitter emitter : handler.getEmitters(teamBuildingUuid)) {
 			sendNotification(emitter, name, data);
 		}

@@ -5,7 +5,6 @@ import com.nexters.moyeomoyeo.common.exception.dto.ExceptionResponse;
 import com.nexters.moyeomoyeo.team_building.controller.dto.request.UserRequest;
 import com.nexters.moyeomoyeo.team_building.controller.dto.response.TeamBuildingResponse;
 import com.nexters.moyeomoyeo.team_building.controller.dto.response.UserInfo;
-import com.nexters.moyeomoyeo.team_building.service.TeamBuildingService;
 import com.nexters.moyeomoyeo.team_building.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;

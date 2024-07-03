@@ -15,6 +15,7 @@ import com.nexters.moyeomoyeo.team_building.domain.constant.RoundStatus;
 import com.nexters.moyeomoyeo.team_building.domain.entity.Team;
 import com.nexters.moyeomoyeo.team_building.domain.entity.TeamBuilding;
 import com.nexters.moyeomoyeo.team_building.domain.entity.User;
+import com.nexters.moyeomoyeo.team_building.domain.repository.TeamBuildingRepository;
 import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
@@ -25,9 +26,9 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class TeamBuildingCoreService {
 
-	private final TeamBuildingService teamBuildingService;
 	private final UserService userService;
 	private final NotificationService notificationService;
+	private final TeamBuildingRepository teamBuildingRepository;
 
 	/**
 	 * 선택된 유저가 현재 라운드에서 지망한 팀이 유저를 선택한 팀과 일치하는지 유효성 체크.
@@ -65,66 +66,94 @@ public class TeamBuildingCoreService {
 		return true;
 	}
 
+	private static Team findTeam(TeamBuilding teamBuilding, String teamUuid) {
+		return teamBuilding.getTeams()
+			.stream()
+			.filter(team -> teamUuid.equals(team.getUuid()))
+			.findFirst()
+			.orElseThrow(ExceptionInfo.INVALID_TEAM_UUID::exception);
+	}
+
+	private static List<UserInfo> makeUserInfo(List<User> targetTeam) {
+		return targetTeam.stream().map(UserInfo::makeUserInfo).toList();
+	}
+
 	@Transactional(readOnly = true)
 	public TeamBuildingResponse findTeamBuilding(String teamBuildingUuid) {
-		final TeamBuilding teamBuilding = teamBuildingService.findByUuid(teamBuildingUuid);
-
+		final TeamBuilding teamBuilding = findByUuid(teamBuildingUuid);
 		final List<User> users = userService.findByTeamBuildingId(teamBuildingUuid);
 
 		return TeamBuildingResponse.builder()
 			.teamBuildingInfo(makeTeamBuildingInfo(teamBuilding))
 			.teamInfoList(teamBuilding.getTeams().stream().map(TeamInfo::makeTeamInfo).toList())
-			.userInfoList(users.stream().map(UserInfo::makeUserInfo).toList())
+			.userInfoList(makeUserInfo(users))
 			.build();
 	}
 
 	@Transactional
 	public UserPickResponse pickUsers(String teamBuildingUuid, String teamUuid, UserPickRequest userPickRequest) {
-		final TeamBuilding teamBuilding = teamBuildingService.findByUuid(teamBuildingUuid);
+		final TeamBuilding teamBuilding = findByUuid(teamBuildingUuid);
 		final RoundStatus teamBuildingRoundStatus = teamBuilding.getRoundStatus();
 
+		final Team team = findTeam(teamBuilding, teamUuid);
+
+		final List<String> userUuids = userPickRequest.getUserUuids();
+		final List<User> pickedUsers = userService.findByUuidIn(userUuids);
+
+		validateRequest(teamBuildingRoundStatus, team, pickedUsers);
+
+		addUserAndMoveTeamRound(team, pickedUsers);
+
+		moveTeamBuildingRoundIfAllSelected(teamBuilding);
+
+		broadcastPickedUsers(teamBuilding.getUuid(), team.getUuid(), team.getName(), userUuids);
+
+		return UserPickResponse.builder()
+			.userInfoList(makeUserInfo(team.getUsers()))
+			.build();
+	}
+
+	private void broadcastPickedUsers(String teamBuildingUuid, String teamUuid, String teamName, List<String> userUuids) {
+		final PickUserResponse userResponse = PickUserResponse.builder()
+			.teamUuid(teamUuid)
+			.teamName(teamName)
+			.pickUserUuids(userUuids)
+			.build();
+
+		notificationService.broadcast(teamBuildingUuid, "pick-user", userResponse);
+	}
+
+	private static void addUserAndMoveTeamRound(Team targetTeam, List<User> pickedUsers) {
+		for (final User user : pickedUsers) {
+			user.addTeam(targetTeam);
+			user.updateSelectedRound(targetTeam.getRoundStatus());
+		}
+		targetTeam.nextRound();
+	}
+
+	private static void validateRequest(RoundStatus teamBuildingRoundStatus, Team targetTeam, List<User> pickedUsers) {
 		if (RoundStatus.COMPLETE == teamBuildingRoundStatus) {
 			throw ExceptionInfo.COMPLETED_TEAM_BUILDING.exception();
 		}
-
-		final Team targetTeam = teamBuilding.getTeams()
-			.stream()
-			.filter(team -> teamUuid.equals(team.getUuid()))
-			.findFirst()
-			.orElseThrow(ExceptionInfo.INVALID_TEAM_UUID::exception);
 
 		if (isSelectDone(teamBuildingRoundStatus, targetTeam.getRoundStatus())) {
 			throw ExceptionInfo.DUPLICATED_PICK_REQUEST.exception();
 		}
 
-		final List<String> userUuids = userPickRequest.getUserUuids();
-		final List<User> pickedUsers = userService.findByUuidIn(userUuids);
-
 		if (!isChosenTeam(targetTeam, pickedUsers)) {
 			throw ExceptionInfo.BAD_REQUEST_FOR_USER_PICK.exception();
 		}
+	}
 
-		for (final User user : pickedUsers) {
-			user.addTeam(targetTeam);
-			user.updateSelectedRound(teamBuildingRoundStatus);
-		}
-		targetTeam.nextRound();
+	private TeamBuilding findByUuid(String teamBuildingUuid) {
+		return teamBuildingRepository.findByUuid(teamBuildingUuid)
+			.orElseThrow(ExceptionInfo.INVALID_TEAM_BUILDING_UUID::exception);
+	}
 
-		PickUserResponse userResponse = PickUserResponse.builder()
-			.teamName(targetTeam.getName())
-			.teamUuid(teamUuid)
-			.pickUserUuids(userUuids)
-			.build();
-
-		notificationService.broadCast(teamBuilding.getUuid(), "pick-user", userResponse);
-
-		if (isAllTeamSelected(teamBuilding.getTeams(), teamBuildingRoundStatus)) {
+	private void moveTeamBuildingRoundIfAllSelected(TeamBuilding teamBuilding) {
+		if (isAllTeamSelected(teamBuilding.getTeams(), teamBuilding.getRoundStatus())) {
 			final RoundStatus nextStatus = teamBuilding.nextRound();
-			notificationService.broadCast(teamBuilding.getUuid(), "change-round", nextStatus);
+			notificationService.broadcast(teamBuilding.getUuid(), "change-round", nextStatus);
 		}
-
-		return UserPickResponse.builder()
-			.userInfoList(targetTeam.getUsers().stream().map(UserInfo::makeUserInfo).toList())
-			.build();
 	}
 }

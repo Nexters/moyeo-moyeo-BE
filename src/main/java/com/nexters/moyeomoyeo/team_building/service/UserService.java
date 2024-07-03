@@ -9,7 +9,6 @@ import com.nexters.moyeomoyeo.team_building.controller.dto.response.UserInfo;
 import com.nexters.moyeomoyeo.team_building.domain.entity.User;
 import com.nexters.moyeomoyeo.team_building.domain.repository.UserRepository;
 import jakarta.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -40,7 +39,7 @@ public class UserService {
 		final User user = makeUser(teamBuildingUuid, request);
 
 		UserInfo userInfo = makeUserInfo(userRepository.save(user));
-		notificationService.broadCast(teamBuildingUuid, "create-user", userInfo);
+		notificationService.broadcast(teamBuildingUuid, "create-user", userInfo);
 
 		return userInfo;
 	}
@@ -50,7 +49,7 @@ public class UserService {
 		final User targetUser = findByUuid(userUuid);
 
 		userRepository.delete(targetUser);
-		notificationService.broadCast(teamBuildingUuid, "delete-user", userUuid);
+		notificationService.broadcast(teamBuildingUuid, "delete-user", userUuid);
 
 	}
 

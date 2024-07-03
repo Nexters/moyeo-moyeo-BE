@@ -30,7 +30,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class TeamBuildingAdminController {
 
 	private final TeamBuildingAdminService adminService;
-	private final UserService userService;
 
 	@Operation(summary = "팀 빌딩 생성 요청", description = "팀빌딩 방과 팀 리스트를 생성됩니다. ")
 	@ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = TeamBuildingResponse.class)))
