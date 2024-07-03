@@ -5,6 +5,7 @@ import com.nexters.moyeomoyeo.common.entity.BaseEntity;
 import com.nexters.moyeomoyeo.common.util.UuidGenerator;
 import com.nexters.moyeomoyeo.team_building.domain.constant.Position;
 import com.nexters.moyeomoyeo.team_building.domain.constant.RoundStatus;
+import io.hypersistence.utils.hibernate.type.json.JsonType;
 import io.micrometer.common.lang.Nullable;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -26,6 +27,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.Type;
 
 @Entity
 @Getter
@@ -50,10 +52,10 @@ public class User extends BaseEntity {
 
 	private String profileLink;
 
-	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@OrderBy("choice_order asc")
+	@Type(JsonType.class)
+	@Column(columnDefinition = "TEXT")
 	@Builder.Default
-	private List<UserChoice> choices = new ArrayList<>();
+	private List<String> choices = new ArrayList<>();
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "team_id")
@@ -73,8 +75,12 @@ public class User extends BaseEntity {
 	}
 
 
-	public UserChoice findChoice(int weight) {
-		return this.choices.get(weight - 1);
+	/**
+	 * @param order 순서
+	 * @return 순서에 해당하는 teamUuid
+	 */
+	public String findChoice(int order) {
+		return this.choices.get(order - 1);
 	}
 
 
