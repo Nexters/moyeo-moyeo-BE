@@ -15,6 +15,8 @@ import com.nexters.moyeomoyeo.team_building.domain.constant.RoundStatus;
 import com.nexters.moyeomoyeo.team_building.domain.entity.Team;
 import com.nexters.moyeomoyeo.team_building.domain.entity.TeamBuilding;
 import com.nexters.moyeomoyeo.team_building.domain.entity.User;
+import com.nexters.moyeomoyeo.team_building.domain.repository.TeamBuildingRepository;
+import jakarta.annotation.Nullable;
 import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
@@ -25,39 +27,44 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class TeamBuildingAdminService {
 
-	private final TeamBuildingService teamBuildingService;
 	private final UserService userService;
 	private final NotificationService notificationService;
+	private final TeamBuildingRepository teamBuildingRepository;
+
+	@Nullable
+	private static Team findTeam(String teamUuid, TeamBuilding teamBuilding) {
+		return teamBuilding.getTeams()
+			.stream()
+			.filter(team -> Objects.equals(team.getUuid(), teamUuid))
+			.findFirst()
+			.orElse(null);
+	}
 
 	@Transactional
 	public UserInfo adjustUser(String teamBuildingUuid, String userUuid, String teamUuid) {
-		final TeamBuilding teamBuilding = teamBuildingService.findByUuid(teamBuildingUuid);
+		final TeamBuilding teamBuilding = findByUuid(teamBuildingUuid);
 
 		if (RoundStatus.ADJUSTED_ROUND != teamBuilding.getRoundStatus()) {
 			throw ExceptionInfo.INVALID_ADJUST_REQUEST.exception();
 		}
 
 		final User user = userService.findByUuid(userUuid);
-		final Team targetTeam = teamBuilding.getTeams()
-			.stream()
-			.filter(team -> Objects.equals(team.getUuid(), teamUuid))
-			.findFirst()
-			.orElse(null);
+		final Team team = findTeam(teamUuid, teamBuilding);
 
-		user.adjustTeam(targetTeam);
-		user.updateSelectedRound(Objects.isNull(targetTeam) ? null : RoundStatus.ADJUSTED_ROUND);
+		user.adjustTeam(team);
+		user.updateSelectedRound(Objects.isNull(team) ? null : RoundStatus.ADJUSTED_ROUND);
 
 		UserInfo userInfo = makeUserInfo(user);
-		notificationService.broadCast(teamBuildingUuid, "adjust-user", userInfo);
+		notificationService.broadcast(teamBuildingUuid, "adjust-user", userInfo);
 		return userInfo;
 	}
 
 
 	@Transactional
 	public void deleteTeamBuildingUser(String uuid, String userUuid) {
-		final TeamBuilding teamBuilding = teamBuildingService.findByUuid(uuid);
+		final TeamBuilding teamBuilding = findByUuid(uuid);
 
-		if (RoundStatus.FIRST_ROUND != teamBuilding.getRoundStatus()) {
+		if (RoundStatus.START != teamBuilding.getRoundStatus()) {
 			throw ExceptionInfo.INVALID_DELETE_REQUEST.exception();
 		}
 		userService.deleteUser(uuid, userUuid);
@@ -65,38 +72,58 @@ public class TeamBuildingAdminService {
 
 	@Transactional
 	public void finishTeamBuilding(String uuid) {
-		final TeamBuilding teamBuilding = teamBuildingService.findByUuid(uuid);
-
+		final TeamBuilding teamBuilding = findByUuid(uuid);
 		if (RoundStatus.ADJUSTED_ROUND != teamBuilding.getRoundStatus()) {
 			throw ExceptionInfo.INVALID_FINISH_REQUEST.exception();
 		}
 
+		moveAllRoundStatus(teamBuilding);
+		notificationService.broadcast(teamBuilding.getUuid(), "finish-team-building", teamBuilding.getRoundStatus());
+	}
+
+	@Transactional
+	public void startTeamBuilding(String teamBuildingUuid) {
+		final TeamBuilding teamBuilding = findByUuid(teamBuildingUuid);
+		if (RoundStatus.START != teamBuilding.getRoundStatus()) {
+			throw ExceptionInfo.INVALID_FINISH_REQUEST.exception();
+		}
+
+		moveAllRoundStatus(teamBuilding);
+		notificationService.broadcast(teamBuilding.getUuid(), "start-team-building", teamBuilding.getRoundStatus());
+	}
+
+	private void moveAllRoundStatus(TeamBuilding teamBuilding) {
 		teamBuilding.nextRound();
-		notificationService.broadCast(teamBuilding.getUuid(), "finish-team-building", teamBuilding.getRoundStatus());
+		for (Team team : teamBuilding.getTeams()) {
+			team.nextRound();
+		}
 	}
 
 
 	@Transactional
 	public TeamBuildingResponse createTeamBuilding(TeamBuildingRequest teamBuildingRequest) {
-		final TeamBuilding teamBuilding = TeamBuilding.builder()
-			.name(teamBuildingRequest.getName())
-			.build();
-
 		final List<Team> teams = teamBuildingRequest.getTeams()
 			.stream()
 			.map(TeamRequest::toEntity)
 			.toList();
 
+		final TeamBuilding teamBuilding = teamBuildingRepository.save(TeamBuilding.builder()
+			.name(teamBuildingRequest.getName())
+			.teams(teams)
+			.build());
+
 		for (final Team team : teams) {
 			team.addTeamBuilding(teamBuilding);
 		}
 
-		final TeamBuilding savedTeamBuilding = teamBuildingService.save(teamBuilding);
-
 		return TeamBuildingResponse.builder()
-			.teamBuildingInfo(makeTeamBuildingInfo(savedTeamBuilding))
-			.teamInfoList(savedTeamBuilding.getTeams().stream().map(TeamInfo::makeTeamInfo).toList())
+			.teamBuildingInfo(makeTeamBuildingInfo(teamBuilding))
+			.teamInfoList(teamBuilding.getTeams().stream().map(TeamInfo::makeTeamInfo).toList())
 			.build();
 	}
 
+	private TeamBuilding findByUuid(String teamBuildingUuid) {
+		return teamBuildingRepository.findByUuid(teamBuildingUuid)
+			.orElseThrow(ExceptionInfo.INVALID_TEAM_BUILDING_UUID::exception);
+	}
 }

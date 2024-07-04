@@ -7,10 +7,8 @@ import com.nexters.moyeomoyeo.notification.service.NotificationService;
 import com.nexters.moyeomoyeo.team_building.controller.dto.request.UserRequest;
 import com.nexters.moyeomoyeo.team_building.controller.dto.response.UserInfo;
 import com.nexters.moyeomoyeo.team_building.domain.entity.User;
-import com.nexters.moyeomoyeo.team_building.domain.entity.UserChoice;
 import com.nexters.moyeomoyeo.team_building.domain.repository.UserRepository;
 import jakarta.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,11 +20,12 @@ public class UserService {
 	private final NotificationService notificationService;
 	private final UserRepository userRepository;
 
-	public static User makeUser(String teamBuildingUuid, UserRequest request) {
+	private static User makeUser(String teamBuildingUuid, UserRequest request) {
 		return User.builder()
 			.name(request.getName())
 			.position(request.getPosition())
 			.profileLink(request.getProfileLink())
+			.choices(request.getChoices())
 			.teamBuildingUuid(teamBuildingUuid)
 			.build();
 	}
@@ -39,39 +38,17 @@ public class UserService {
 	public UserInfo createUser(String teamBuildingUuid, UserRequest request) {
 		final User user = makeUser(teamBuildingUuid, request);
 
-		final List<UserChoice> choices = createUserChoices(request.getChoices());
-		for (final UserChoice choice : choices) {
-			choice.addUser(user);
-		}
-
 		UserInfo userInfo = makeUserInfo(userRepository.save(user));
-		notificationService.broadCast(teamBuildingUuid, "create-user", userInfo);
+		notificationService.broadcast(teamBuildingUuid, "create-user", userInfo);
 
 		return userInfo;
 	}
 
-	public List<UserChoice> createUserChoices(List<String> teamUuids) {
-		final List<UserChoice> choices = new ArrayList<>();
-		int choiceOrder = 1;
-
-		for (final String teamUuid : teamUuids) {
-			final UserChoice userChoice = UserChoice.builder()
-				.choiceOrder(choiceOrder++)
-				.teamUuid(teamUuid)
-				.build();
-
-			choices.add(userChoice);
-		}
-		return choices;
-	}
-
-	@Transactional
 	public void deleteUser(String teamBuildingUuid, String userUuid) {
 		final User targetUser = findByUuid(userUuid);
 
 		userRepository.delete(targetUser);
-		notificationService.broadCast(teamBuildingUuid, "delete-user", userUuid);
-
+		notificationService.broadcast(teamBuildingUuid, "delete-user", userUuid);
 	}
 
 	public User findByUuid(String userUuid) {

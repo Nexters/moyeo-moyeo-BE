@@ -2,6 +2,7 @@ package com.nexters.moyeomoyeo.team_building.domain.entity;
 
 
 import static com.nexters.moyeomoyeo.team_building.domain.constant.RoundStatus.FIRST_ROUND;
+import static com.nexters.moyeomoyeo.team_building.domain.constant.RoundStatus.START;
 
 import com.nexters.moyeomoyeo.common.constant.ExceptionInfo;
 import com.nexters.moyeomoyeo.common.entity.BaseEntity;
@@ -43,7 +44,7 @@ public class TeamBuilding extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	@Column(name = "round_status")
 	@Builder.Default
-	private RoundStatus roundStatus = FIRST_ROUND;
+	private RoundStatus roundStatus = START;
 
 	@OneToMany(mappedBy = "teamBuilding", cascade = CascadeType.ALL)
 	@Builder.Default
