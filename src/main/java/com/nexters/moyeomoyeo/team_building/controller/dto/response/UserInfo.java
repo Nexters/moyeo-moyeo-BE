@@ -4,6 +4,7 @@ import com.nexters.moyeomoyeo.team_building.domain.constant.Position;
 import com.nexters.moyeomoyeo.team_building.domain.constant.RoundStatus;
 import com.nexters.moyeomoyeo.team_building.domain.entity.User;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import lombok.AccessLevel;
@@ -32,6 +33,7 @@ public class UserInfo {
 	private String profileLink;
 	@Schema(description = "선택받은 라운드")
 	private RoundStatus selectedRound;
+	private LocalDateTime createdDate;
 
 
 	public static UserInfo makeUserInfo(User user) {
@@ -45,6 +47,7 @@ public class UserInfo {
 			.joinedTeamUuid(joinedTeamUuid)
 			.profileLink(user.getProfileLink())
 			.selectedRound(user.getSelectedRound())
+			.createdDate(user.getCreatedDate())
 			.build();
 	}
 }

@@ -77,4 +77,16 @@ public class TeamBuildingAdminController {
 			.header("X-Accel-Buffering", "no")
 			.build();
 	}
+
+	@Operation(summary = "팀 빌딩 시작하기", description = """
+		운영진이 START 단계에서 팀빌딩을 시작합니다. \s
+		event : start-team-building, data : RoundStatus(FIRST_ROUND) \s
+		""")
+	@PutMapping("/{teamBuildingUuid}/start")
+	public ResponseEntity<Void> startTeamBuilding(@PathVariable(value = "teamBuildingUuid") String teamBuildingUuid) {
+		adminService.startTeamBuilding(teamBuildingUuid);
+		return ResponseEntity.ok()
+			.header("X-Accel-Buffering", "no")
+			.build();
+	}
 }

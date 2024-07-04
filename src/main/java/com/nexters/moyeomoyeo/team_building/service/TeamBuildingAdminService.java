@@ -73,13 +73,30 @@ public class TeamBuildingAdminService {
 	@Transactional
 	public void finishTeamBuilding(String uuid) {
 		final TeamBuilding teamBuilding = findByUuid(uuid);
-
 		if (RoundStatus.ADJUSTED_ROUND != teamBuilding.getRoundStatus()) {
 			throw ExceptionInfo.INVALID_FINISH_REQUEST.exception();
 		}
 
-		teamBuilding.nextRound();
+		moveAllRoundStatus(teamBuilding);
 		notificationService.broadcast(teamBuilding.getUuid(), "finish-team-building", teamBuilding.getRoundStatus());
+	}
+
+	@Transactional
+	public void startTeamBuilding(String teamBuildingUuid) {
+		final TeamBuilding teamBuilding = findByUuid(teamBuildingUuid);
+		if (RoundStatus.START != teamBuilding.getRoundStatus()) {
+			throw ExceptionInfo.INVALID_FINISH_REQUEST.exception();
+		}
+
+		moveAllRoundStatus(teamBuilding);
+		notificationService.broadcast(teamBuilding.getUuid(), "start-team-building", teamBuilding.getRoundStatus());
+	}
+
+	private void moveAllRoundStatus(TeamBuilding teamBuilding) {
+		teamBuilding.nextRound();
+		for (Team team : teamBuilding.getTeams()) {
+			team.nextRound();
+		}
 	}
 
 

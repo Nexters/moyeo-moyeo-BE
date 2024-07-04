@@ -125,5 +125,17 @@ class TeamBuildingAdminServiceTest {
 		sut.finishTeamBuilding(teamBuilding.getUuid());
 
 		assertThat(teamBuilding.getRoundStatus()).isEqualTo(RoundStatus.COMPLETE);
+		assertThat(teamBuilding.getTeams().get(0).getRoundStatus()).isEqualTo(RoundStatus.COMPLETE);
+	}
+
+	@Test
+	@Transactional
+	void startTeamBuilding() {
+		final TeamBuilding teamBuilding = teamBuildingRepository.save(FixtureTeamBuilding.teamBuilding(RoundStatus.START));
+
+		sut.startTeamBuilding(teamBuilding.getUuid());
+
+		assertThat(teamBuilding.getRoundStatus()).isEqualTo(RoundStatus.FIRST_ROUND);
+		assertThat(teamBuilding.getTeams().get(0).getRoundStatus()).isEqualTo(RoundStatus.FIRST_ROUND);
 	}
 }

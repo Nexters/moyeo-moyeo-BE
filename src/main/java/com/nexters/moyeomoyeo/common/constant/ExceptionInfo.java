@@ -14,6 +14,7 @@ public enum ExceptionInfo {
 	BAD_REQUEST_FOR_USER_PICK("유효하지 않은 유저 선택 요청입니다.", HttpStatus.BAD_REQUEST),
 	ALREADY_JOINED_USER("다른 팀에 배정되어 있는 유저입니다.", HttpStatus.BAD_REQUEST),
 	COMPLETED_TEAM_BUILDING("이미 종료된 팀빌딩입니다.", HttpStatus.BAD_REQUEST),
+	INVALID_START_REQUEST("시작 라운드에서만 팀빌딩을 시작할 수 있습니다.", HttpStatus.BAD_REQUEST),
 	INVALID_ADJUST_REQUEST("조정 라운드에서만 조정 가능합니다.", HttpStatus.BAD_REQUEST),
 	INVALID_FINISH_REQUEST("조정 라운드에서만 팀빌딩을 종료할 수 있습니다.", HttpStatus.BAD_REQUEST),
 	INVALID_DELETE_REQUEST("1라운드에서만 회원을 삭제할 수 있습니다.", HttpStatus.BAD_REQUEST),
