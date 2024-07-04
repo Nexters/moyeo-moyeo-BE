@@ -69,6 +69,6 @@ jobs:
             sudo docker ps
             sudo docker rm -f $(docker ps -qa)
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/moyeomoyeo
-            cd ./app/docker
+            cd /moyeo-moyeo-BE/app/docker
             sudo docker-compose up -d
             sudo docker image prune -f
