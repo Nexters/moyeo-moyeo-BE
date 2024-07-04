@@ -30,7 +30,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class TeamBuildingAdminController {
 
 	private final TeamBuildingAdminService adminService;
-	private final UserService userService;
 
 	@Operation(summary = "팀 빌딩 생성 요청", description = "팀빌딩 방과 팀 리스트를 생성됩니다. ")
 	@ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = TeamBuildingResponse.class)))
@@ -74,6 +73,18 @@ public class TeamBuildingAdminController {
 	@PutMapping("/{teamBuildingUuid}/finish")
 	public ResponseEntity<Void> finishTeamBuilding(@PathVariable(value = "teamBuildingUuid") String teamBuildingUuid) {
 		adminService.finishTeamBuilding(teamBuildingUuid);
+		return ResponseEntity.ok()
+			.header("X-Accel-Buffering", "no")
+			.build();
+	}
+
+	@Operation(summary = "팀 빌딩 시작하기", description = """
+		운영진이 START 단계에서 팀빌딩을 시작합니다. \s
+		event : start-team-building, data : RoundStatus(FIRST_ROUND) \s
+		""")
+	@PutMapping("/{teamBuildingUuid}/start")
+	public ResponseEntity<Void> startTeamBuilding(@PathVariable(value = "teamBuildingUuid") String teamBuildingUuid) {
+		adminService.startTeamBuilding(teamBuildingUuid);
 		return ResponseEntity.ok()
 			.header("X-Accel-Buffering", "no")
 			.build();

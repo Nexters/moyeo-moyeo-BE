@@ -47,7 +47,7 @@ public class Team extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	@Column(name = "round_status")
 	@Builder.Default
-	private RoundStatus roundStatus = RoundStatus.FIRST_ROUND;
+	private RoundStatus roundStatus = RoundStatus.START;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "team_building_id")
@@ -56,16 +56,6 @@ public class Team extends BaseEntity {
 	@OneToMany(mappedBy = "team", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@Builder.Default
 	private List<User> users = new ArrayList<>();
-
-	protected Team(String name, String pmName, Position pmPosition, RoundStatus roundStatus,
-		TeamBuilding teamBuilding) {
-		this.name = name;
-		this.pmName = pmName;
-		this.pmPosition = pmPosition;
-		this.uuid = UuidGenerator.createUuid();
-		this.roundStatus = roundStatus;
-		this.teamBuilding = teamBuilding;
-	}
 
 	public void nextRound() {
 		if (this.roundStatus == RoundStatus.COMPLETE) {
@@ -77,6 +67,5 @@ public class Team extends BaseEntity {
 
 	public void addTeamBuilding(TeamBuilding teamBuilding) {
 		this.teamBuilding = teamBuilding;
-		this.teamBuilding.getTeams().add(this);
 	}
 }
