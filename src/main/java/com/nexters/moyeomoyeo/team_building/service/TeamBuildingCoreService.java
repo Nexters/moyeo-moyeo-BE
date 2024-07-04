@@ -1,26 +1,23 @@
 package com.nexters.moyeomoyeo.team_building.service;
 
-import static com.nexters.moyeomoyeo.team_building.controller.dto.response.TeamBuildingResponse.TeamBuildingInfo.makeTeamBuildingInfo;
-import static com.nexters.moyeomoyeo.team_building.controller.dto.response.TeamInfo.isSelectDone;
-
 import com.nexters.moyeomoyeo.common.constant.ExceptionInfo;
 import com.nexters.moyeomoyeo.notification.service.NotificationService;
 import com.nexters.moyeomoyeo.team_building.controller.dto.request.UserPickRequest;
-import com.nexters.moyeomoyeo.team_building.controller.dto.response.PickUserResponse;
-import com.nexters.moyeomoyeo.team_building.controller.dto.response.TeamBuildingResponse;
-import com.nexters.moyeomoyeo.team_building.controller.dto.response.TeamInfo;
-import com.nexters.moyeomoyeo.team_building.controller.dto.response.UserInfo;
-import com.nexters.moyeomoyeo.team_building.controller.dto.response.UserPickResponse;
+import com.nexters.moyeomoyeo.team_building.controller.dto.response.*;
 import com.nexters.moyeomoyeo.team_building.domain.constant.RoundStatus;
 import com.nexters.moyeomoyeo.team_building.domain.entity.Team;
 import com.nexters.moyeomoyeo.team_building.domain.entity.TeamBuilding;
 import com.nexters.moyeomoyeo.team_building.domain.entity.User;
 import com.nexters.moyeomoyeo.team_building.domain.repository.TeamBuildingRepository;
-import java.util.List;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Objects;
+
+import static com.nexters.moyeomoyeo.team_building.controller.dto.response.TeamBuildingResponse.TeamBuildingInfo.makeTeamBuildingInfo;
+import static com.nexters.moyeomoyeo.team_building.controller.dto.response.TeamInfo.isSelectDone;
 
 @Service
 @RequiredArgsConstructor
@@ -78,6 +75,28 @@ public class TeamBuildingCoreService {
 		return targetTeam.stream().map(UserInfo::makeUserInfo).toList();
 	}
 
+	private static void addUserAndMoveTeamRound(Team targetTeam, List<User> pickedUsers) {
+		for (final User user : pickedUsers) {
+			user.addTeam(targetTeam);
+			user.updateSelectedRound(targetTeam.getRoundStatus());
+		}
+		targetTeam.nextRound();
+	}
+
+	private static void validateRequest(RoundStatus teamBuildingRoundStatus, Team targetTeam, List<User> pickedUsers) {
+		if (!RoundStatus.isPickUserPossible(teamBuildingRoundStatus)) {
+			throw ExceptionInfo.BAD_REQUEST_FOR_USER_PICK.exception();
+		}
+
+		if (isSelectDone(teamBuildingRoundStatus, targetTeam.getRoundStatus())) {
+			throw ExceptionInfo.DUPLICATED_PICK_REQUEST.exception();
+		}
+
+		if (!isChosenTeam(targetTeam, pickedUsers)) {
+			throw ExceptionInfo.BAD_REQUEST_FOR_USER_PICK.exception();
+		}
+	}
+
 	@Transactional(readOnly = true)
 	public TeamBuildingResponse findTeamBuilding(String teamBuildingUuid) {
 		final TeamBuilding teamBuilding = findByUuid(teamBuildingUuid);
@@ -87,6 +106,22 @@ public class TeamBuildingCoreService {
 			.teamBuildingInfo(makeTeamBuildingInfo(teamBuilding))
 			.teamInfoList(teamBuilding.getTeams().stream().map(TeamInfo::makeTeamInfo).toList())
 			.userInfoList(makeUserInfo(users))
+			.build();
+	}
+
+	/**
+	 * 설문 팀 조회시 user choice 는 다른 유저에게 숨겨져야함
+	 *
+	 * @param teamBuildingUuid teambuilding uuid
+	 * @return userInfo 가 제외된 팀빌딩 정보
+	 */
+	@Transactional(readOnly = true)
+	public TeamBuildingResponse findTeamBuildingExcludingUser(String teamBuildingUuid) {
+		final TeamBuilding teamBuilding = findByUuid(teamBuildingUuid);
+
+		return TeamBuildingResponse.builder()
+			.teamBuildingInfo(makeTeamBuildingInfo(teamBuilding))
+			.teamInfoList(teamBuilding.getTeams().stream().map(TeamInfo::makeTeamInfo).toList())
 			.build();
 	}
 
@@ -120,28 +155,6 @@ public class TeamBuildingCoreService {
 			.build();
 
 		notificationService.broadcast(teamBuildingUuid, "pick-user", userResponse);
-	}
-
-	private static void addUserAndMoveTeamRound(Team targetTeam, List<User> pickedUsers) {
-		for (final User user : pickedUsers) {
-			user.addTeam(targetTeam);
-			user.updateSelectedRound(targetTeam.getRoundStatus());
-		}
-		targetTeam.nextRound();
-	}
-
-	private static void validateRequest(RoundStatus teamBuildingRoundStatus, Team targetTeam, List<User> pickedUsers) {
-		if (!RoundStatus.isPickUserPossible(teamBuildingRoundStatus)) {
-			throw ExceptionInfo.BAD_REQUEST_FOR_USER_PICK.exception();
-		}
-
-		if (isSelectDone(teamBuildingRoundStatus, targetTeam.getRoundStatus())) {
-			throw ExceptionInfo.DUPLICATED_PICK_REQUEST.exception();
-		}
-
-		if (!isChosenTeam(targetTeam, pickedUsers)) {
-			throw ExceptionInfo.BAD_REQUEST_FOR_USER_PICK.exception();
-		}
 	}
 
 	private TeamBuilding findByUuid(String teamBuildingUuid) {

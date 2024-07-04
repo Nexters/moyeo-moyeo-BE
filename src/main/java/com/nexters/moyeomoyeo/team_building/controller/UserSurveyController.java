@@ -15,12 +15,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Tag(name = "유저 설문", description = "유저 설문 페이지 관련 api 입니다.")
@@ -39,7 +34,7 @@ public class UserSurveyController {
 		@Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))})
 	@PostMapping("/{teamBuildingUuid}/users")
 	public ResponseEntity<UserInfo> createUser(@PathVariable(value = "teamBuildingUuid") String teamBuildingUuid,
-		@RequestBody @Valid UserRequest userRequest) {
+											   @RequestBody @Valid UserRequest userRequest) {
 		return ResponseEntity.ok()
 			.header("X-Accel-Buffering", "no")
 			.body(userService.createUser(teamBuildingUuid, userRequest));
@@ -47,8 +42,8 @@ public class UserSurveyController {
 
 	@Operation(summary = "팀 빌딩 팀 데이터 조회", description = "팀 빌딩, 팀 정보가 조회됩니다. (유저 선택 정보 제외) ")
 	@GetMapping("/{teamBuildingUuid}/teams")
-	public ResponseEntity<TeamBuildingResponse> findTeamBuildingAndTeams(
+	public ResponseEntity<TeamBuildingResponse> findTeamBuildingExcludingUser(
 		@PathVariable(value = "teamBuildingUuid") String teamBuildingUuid) {
-		return ResponseEntity.ok(teamBuildingCoreService.findTeamBuilding(teamBuildingUuid));
+		return ResponseEntity.ok(teamBuildingCoreService.findTeamBuildingExcludingUser(teamBuildingUuid));
 	}
 }
