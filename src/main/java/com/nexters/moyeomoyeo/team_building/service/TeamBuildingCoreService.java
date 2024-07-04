@@ -103,7 +103,6 @@ public class TeamBuildingCoreService {
 		validateRequest(teamBuildingRoundStatus, team, pickedUsers);
 
 		addUserAndMoveTeamRound(team, pickedUsers);
-
 		moveTeamBuildingRoundIfAllSelected(teamBuilding);
 
 		broadcastPickedUsers(teamBuilding.getUuid(), team.getUuid(), team.getName(), userUuids);
@@ -132,8 +131,8 @@ public class TeamBuildingCoreService {
 	}
 
 	private static void validateRequest(RoundStatus teamBuildingRoundStatus, Team targetTeam, List<User> pickedUsers) {
-		if (RoundStatus.COMPLETE == teamBuildingRoundStatus) {
-			throw ExceptionInfo.COMPLETED_TEAM_BUILDING.exception();
+		if (!RoundStatus.isPickUserPossible(teamBuildingRoundStatus)) {
+			throw ExceptionInfo.BAD_REQUEST_FOR_USER_PICK.exception();
 		}
 
 		if (isSelectDone(teamBuildingRoundStatus, targetTeam.getRoundStatus())) {

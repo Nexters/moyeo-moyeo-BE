@@ -67,6 +67,5 @@ public class Team extends BaseEntity {
 
 	public void addTeamBuilding(TeamBuilding teamBuilding) {
 		this.teamBuilding = teamBuilding;
-		this.teamBuilding.getTeams().add(this);
 	}
 }

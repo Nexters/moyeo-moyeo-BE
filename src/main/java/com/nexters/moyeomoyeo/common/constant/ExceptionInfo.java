@@ -11,7 +11,7 @@ public enum ExceptionInfo {
 	INVALID_TEAM_BUILDING_UUID("팀빌딩을 찾을 수 없습니다.", HttpStatus.BAD_REQUEST),
 	INVALID_TEAM_UUID("팀을 찾을 수 없습니다.", HttpStatus.BAD_REQUEST),
 	INVALID_USER_UUID("유저를 찾을 수 없습니다.", HttpStatus.BAD_REQUEST),
-	BAD_REQUEST_FOR_USER_PICK("해당 유저를 선택할 수 없습니다.", HttpStatus.BAD_REQUEST),
+	BAD_REQUEST_FOR_USER_PICK("유효하지 않은 유저 선택 요청입니다.", HttpStatus.BAD_REQUEST),
 	ALREADY_JOINED_USER("다른 팀에 배정되어 있는 유저입니다.", HttpStatus.BAD_REQUEST),
 	COMPLETED_TEAM_BUILDING("이미 종료된 팀빌딩입니다.", HttpStatus.BAD_REQUEST),
 	INVALID_ADJUST_REQUEST("조정 라운드에서만 조정 가능합니다.", HttpStatus.BAD_REQUEST),

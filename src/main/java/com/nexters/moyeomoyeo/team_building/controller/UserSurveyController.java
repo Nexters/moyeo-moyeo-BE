@@ -5,6 +5,7 @@ import com.nexters.moyeomoyeo.common.exception.dto.ExceptionResponse;
 import com.nexters.moyeomoyeo.team_building.controller.dto.request.UserRequest;
 import com.nexters.moyeomoyeo.team_building.controller.dto.response.TeamBuildingResponse;
 import com.nexters.moyeomoyeo.team_building.controller.dto.response.UserInfo;
+import com.nexters.moyeomoyeo.team_building.service.TeamBuildingCoreService;
 import com.nexters.moyeomoyeo.team_building.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -28,7 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserSurveyController {
 
 	private final UserService userService;
-	private final TeamBuildingService teamBuildingService;
+	private final TeamBuildingCoreService teamBuildingCoreService;
 
 	@Operation(summary = "회원 생성 요청", description = """
 		회원이 생성됩니다. \s
@@ -48,6 +49,6 @@ public class UserSurveyController {
 	@GetMapping("/{teamBuildingUuid}/teams")
 	public ResponseEntity<TeamBuildingResponse> findTeamBuildingAndTeams(
 		@PathVariable(value = "teamBuildingUuid") String teamBuildingUuid) {
-		return ResponseEntity.ok(teamBuildingService.findTeamBuildingAndTeams(teamBuildingUuid));
+		return ResponseEntity.ok(teamBuildingCoreService.findTeamBuilding(teamBuildingUuid));
 	}
 }

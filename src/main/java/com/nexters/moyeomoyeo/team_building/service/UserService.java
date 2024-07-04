@@ -20,7 +20,7 @@ public class UserService {
 	private final NotificationService notificationService;
 	private final UserRepository userRepository;
 
-	public static User makeUser(String teamBuildingUuid, UserRequest request) {
+	private static User makeUser(String teamBuildingUuid, UserRequest request) {
 		return User.builder()
 			.name(request.getName())
 			.position(request.getPosition())
@@ -44,13 +44,11 @@ public class UserService {
 		return userInfo;
 	}
 
-	@Transactional
 	public void deleteUser(String teamBuildingUuid, String userUuid) {
 		final User targetUser = findByUuid(userUuid);
 
 		userRepository.delete(targetUser);
 		notificationService.broadcast(teamBuildingUuid, "delete-user", userUuid);
-
 	}
 
 	public User findByUuid(String userUuid) {
